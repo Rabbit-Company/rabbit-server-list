@@ -7,6 +7,7 @@ export default class Errors{
 		1002: 'Invalid email address.',
 		1003: 'Password needs to be hashed with Argon2id. The length of hashed password needs to be 128 characters.',
 		1004: 'Token is invalid. Please login first to get the token.',
+		1005: 'Username is already registered.',
 	};
 
 	static get(id){

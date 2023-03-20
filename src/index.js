@@ -15,6 +15,7 @@ router.use('*', cors({
 }));
 
 router.post('/v1/account/create', async request => {
+	Utils.initialize(request.env);
 	let data = {};
 
 	try{
@@ -28,6 +29,7 @@ router.post('/v1/account/create', async request => {
 });
 
 router.post('/v1/account/delete', async request => {
+	Utils.initialize(request.env);
 	let data = {};
 
 	try{

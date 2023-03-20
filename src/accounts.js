@@ -9,6 +9,13 @@ export default class Accounts{
 		if(!Validate.email(email)) return Errors.getJson(1002);
 		if(!Validate.password(password)) return Errors.getJson(1003);
 
+		password = await Utils.generateHash(password);
+		try{
+			await Utils.env.DB.prepare("INSERT INTO accounts(username, password, email, created, accessed) VALUES(?, ?, ?, ?, ?)").bind(username, password, email, Utils.date, Utils.date).run();
+		}catch{
+			return Errors.getJson(1005);
+		}
+
 		return Errors.getJson(0);
 	}
 
