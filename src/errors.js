@@ -8,7 +8,7 @@ export default class Errors{
 		1003: 'Password needs to be hashed with Argon2id. The length of hashed password needs to be 128 characters.',
 		1004: 'Token is invalid. Please login first to get the token.',
 		1005: 'Username is already registered.',
-		1006: 'OTP is invalid.',
+		1006: 'Basic Authentication is missing.',
 		1007: 'Password is incorrect.',
 		1008: 'The token is incorrect or it has expired. Please Sign in again.',
 		1009: 'Something went wrong while trying to perform this action. Please try again later.',

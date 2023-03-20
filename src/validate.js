@@ -15,11 +15,6 @@ export default class Validate{
 		return /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/.test(email);
 	}
 
-	static OTP(otp){
-		if(typeof(otp) !== 'string') return false;
-		return (otp.length === 0 || otp.length === 6 || otp.length === 44);
-	}
-
 	static token(token){
 		if(typeof(token) !== 'string') return false;
 		return token.length === 128;

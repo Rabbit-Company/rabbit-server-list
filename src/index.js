@@ -1,5 +1,6 @@
 import Utils from './utils.js';
 import Errors from './errors.js';
+import Accounts from './accounts.js';
 import Account from './account.js';
 
 import { Hono } from 'hono';
@@ -16,43 +17,46 @@ router.use('*', cors({
 
 router.post('/v1/account/create', async request => {
 	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
-	let data = {};
 
+	const auth = Utils.basicAuthentication(request.req.headers.get('Authorization'));
+	if(auth === null) return Utils.jsonResponse(Errors.getJson(1006));
+
+	let data = {};
 	try{
 		data = await request.req.json();
 	}catch{
 		return Utils.jsonResponse(Errors.getJson(1000));
 	}
 
-	let message = await Account.create(data['username'], data['email'], data['password']);
+	let message = await Accounts.create(auth.user, data['email'], auth.pass);
 	return Utils.jsonResponse(message);
 });
 
-router.post('/v1/account/login', async request => {
+router.get('/v1/account', async request => {
 	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
-	let data = {};
 
-	try{
-		data = await request.req.json();
-	}catch{
-		return Utils.jsonResponse(Errors.getJson(1000));
-	}
+	const auth = Utils.basicAuthentication(request.req.headers.get('Authorization'));
+	if(auth === null) return Utils.jsonResponse(Errors.getJson(1006));
 
-	let message = await Account.login(data['username'], data['password'], data['otp']);
+	let message = await Account.data(auth.user, auth.pass);
+	return Utils.jsonResponse(message);
+}).delete(async request => {
+	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
+
+	const auth = Utils.basicAuthentication(request.req.headers.get('Authorization'));
+	if(auth === null) return Utils.jsonResponse(Errors.getJson(1006));
+
+	let message = await Account.delete(auth.user, auth.pass);
 	return Utils.jsonResponse(message);
 });
 
-router.post('/v1/account/delete', async request => {
+router.get('/v1/account/token', async request => {
 	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
-	let data = {};
 
-	try{
-		data = await request.req.json();
-	}catch{
-		return Utils.jsonResponse(Errors.getJson(1000));
-	}
+	const auth = Utils.basicAuthentication(request.req.headers.get('Authorization'));
+	if(auth === null) return Utils.jsonResponse(Errors.getJson(1006));
 
-	let message = await Account.delete(data['username'], data['token']);
+	let message = await Account.token(auth.user, auth.pass);
 	return Utils.jsonResponse(message);
 });
 

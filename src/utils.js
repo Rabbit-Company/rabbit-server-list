@@ -93,4 +93,17 @@ export default class Utils{
 	static async authenticate(username, token){
 		return (token === await this.getToken(username));
 	}
+
+	static basicAuthentication(authorization) {
+		if(authorization === null) return null;
+		const [scheme, encoded] = authorization.split(' ');
+		if (!encoded || scheme !== 'Basic') return null;
+		const buffer = Uint8Array.from(atob(encoded), character => character.charCodeAt(0));
+		const decoded = new TextDecoder().decode(buffer).normalize();
+
+		const index = decoded.indexOf(':');
+		if (index === -1 || /[\0-\x1F\x7F]/.test(decoded)) return null;
+
+		return { user: decoded.substring(0, index), pass: decoded.substring(index + 1) };
+	}
 }
