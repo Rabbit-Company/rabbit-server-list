@@ -12,6 +12,7 @@ export default class Accounts{
 
 	static delete(username, token){
 		if(!Validate.username(username)) return Errors.getJson(1000);
+		if(!Validate.token(token)) return Errors.getJson(1003);
 	}
 
 }
