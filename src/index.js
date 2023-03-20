@@ -27,6 +27,19 @@ router.post('/v1/account/create', async request => {
 	return Utils.jsonResponse(message);
 });
 
+router.post('/v1/account/delete', async request => {
+	let data = {};
+
+	try{
+		data = await request.req.json();
+	}catch{
+		return Utils.jsonResponse(Errors.getJson(1000));
+	}
+
+	let message = await Accounts.delete(data['username'], data['token']);
+	return Utils.jsonResponse(message);
+});
+
 router.all("*", () => {
 	return Utils.jsonResponse({ "error": 404, "info": "Invalid API endpoint" }, 404);
 });
