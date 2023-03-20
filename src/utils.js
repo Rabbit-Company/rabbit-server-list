@@ -52,6 +52,14 @@ export default class Utils{
 		await this.cache.delete("https://api.rabbitserverlist.com?key=" + key);
 	}
 
+	static isPositiveInteger = string => {
+    const number = Number(string);
+    const isInteger = Number.isInteger(number);
+    const isPositive = number > 0;
+
+    return isInteger && isPositive;
+}
+
 	static async generateHash(message, hash = 'SHA-512'){
 		const msgUint8 = new TextEncoder().encode(message);
 		const hashBuffer = await crypto.subtle.digest(hash, msgUint8);
