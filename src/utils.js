@@ -1,11 +1,13 @@
 export default class Utils{
 	static env;
 	static date;
+	static hashedIP;
 	static cache = caches.default;
 
-	static initialize(env){
+	static async initialize(env, ip){
 		this.env = env;
 		this.date = new Date().toISOString().split('T')[0];
+		this.hashedIP = await this.generateHash('rabbitcompany-' + ip + this.date, 'SHA-256');
 	}
 
 	static jsonResponse(json, statusCode = 200){
@@ -25,21 +27,21 @@ export default class Utils{
 		}
 		let nres = new Response(value);
 		nres.headers.append('Cache-Control', 's-maxage=' + cacheTime);
-		await Utils.cache.put(cacheKey, nres);
+		await this.cache.put(cacheKey, nres);
 	}
 
 	static async getValue(key, cacheTime = 60){
 		let value = null;
 
 		let cacheKey = "https://api.rabbitserverlist.com?key=" + key;
-		let res = await cache.match(cacheKey);
+		let res = await this.cache.match(cacheKey);
 		if(res) value = await res.text();
 
 		if(value == null){
 			value = await this.env.KV.get(key, { cacheTtl: cacheTime });
 			let nres = new Response(value);
 			nres.headers.append('Cache-Control', 's-maxage=' + cacheTime);
-			if(value != null) await Utils.cache.put(cacheKey, nres);
+			if(value != null) await this.cache.put(cacheKey, nres);
 		}
 
 		return value;
@@ -47,7 +49,7 @@ export default class Utils{
 
 	static async deleteValue(key){
 		await this.env.KV.delete(key);
-		await Utils.cache.delete("https://api.rabbitserverlist.com?key=" + key);
+		await this.cache.delete("https://api.rabbitserverlist.com?key=" + key);
 	}
 
 	static async generateHash(message, hash = 'SHA-512'){
@@ -55,5 +57,31 @@ export default class Utils{
 		const hashBuffer = await crypto.subtle.digest(hash, msgUint8);
 		const hashArray = Array.from(new Uint8Array(hashBuffer));
 		return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+	}
+
+	static getRandomInt(max, min = 0) {
+		min = Math.ceil(min);
+		max = Math.floor(max);
+		return Math.floor(Math.random() * (max - min)) + min;
+	}
+
+	static generateCodes(){
+		let codes = '';
+		for(let i = 0; i < 10; i++) codes += this.getRandomInt(999999, 100000) + ';';
+		codes = codes.slice(0, -1);
+		return codes;
+	}
+
+	static async generateToken(username){
+		let token = null;
+		let key = 'token-' + username + '-' + this.hashedIP;
+
+		token = await this.getValue(key);
+		if(token == null){
+			token = await this.generateHash(this.generateCodes());
+			await this.setValue(key, token, 86400);
+		}
+
+		return token;
 	}
 }

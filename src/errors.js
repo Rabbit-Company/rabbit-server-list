@@ -8,6 +8,9 @@ export default class Errors{
 		1003: 'Password needs to be hashed with Argon2id. The length of hashed password needs to be 128 characters.',
 		1004: 'Token is invalid. Please login first to get the token.',
 		1005: 'Username is already registered.',
+		1006: 'OTP is invalid.',
+		1007: 'Password is incorrect.',
+		1008: '',
 	};
 
 	static get(id){
