@@ -15,7 +15,7 @@ router.use('*', cors({
 	credentials: true,
 }));
 
-router.post('/v1/account/create', async request => {
+router.post('/v1/account', async request => {
 	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
 
 	const auth = Utils.basicAuthentication(request.req.headers.get('Authorization'));
@@ -28,11 +28,9 @@ router.post('/v1/account/create', async request => {
 		return Utils.jsonResponse(Errors.getJson(1000));
 	}
 
-	let message = await Accounts.create(auth.user, data['email'], auth.pass);
+	let message = await Account.create(auth.user, data['email'], auth.pass);
 	return Utils.jsonResponse(message);
-});
-
-router.get('/v1/account', async request => {
+}).get(async request => {
 	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
 
 	const auth = Utils.basicAuthentication(request.req.headers.get('Authorization'));
