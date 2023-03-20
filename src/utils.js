@@ -72,6 +72,11 @@ export default class Utils{
 		return codes;
 	}
 
+	static async getToken(username){
+		let key = 'token-' + username + '-' + this.hashedIP;
+		return (await this.getValue(key));
+	}
+
 	static async generateToken(username){
 		let token = null;
 		let key = 'token-' + username + '-' + this.hashedIP;
@@ -83,5 +88,9 @@ export default class Utils{
 		}
 
 		return token;
+	}
+
+	static async authenticate(username, token){
+		return (token === await this.getToken(username));
 	}
 }

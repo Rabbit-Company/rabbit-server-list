@@ -43,6 +43,17 @@ export default class Account{
 		if(!Validate.username(username)) return Errors.getJson(1001);
 		if(!Validate.token(token)) return Errors.getJson(1004);
 
+		if(!(await Utils.authenticate(username, token))) return Errors.getJson(1008);
+
+		try{
+			let token = 'token-' + username + '-' + Utils.hashedIP;
+
+			await Utils.env.DB.prepare("DELETE FROM accounts WHERE username = ?").bind(username).run();
+			await Utils.deleteValue(token);
+		}catch{
+			return Errors.getJson(1009);
+		}
+
 		return Errors.getJson(0);
 	}
 

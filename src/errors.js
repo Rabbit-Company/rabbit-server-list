@@ -10,7 +10,8 @@ export default class Errors{
 		1005: 'Username is already registered.',
 		1006: 'OTP is invalid.',
 		1007: 'Password is incorrect.',
-		1008: '',
+		1008: 'The token is incorrect or it has expired. Please Sign in again.',
+		1009: 'Something went wrong while trying to perform this action. Please try again later.',
 	};
 
 	static get(id){
