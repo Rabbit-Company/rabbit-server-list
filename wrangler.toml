@@ -5,3 +5,8 @@ compatibility_date = "2023-03-20"
 [[kv_namespaces]]
 binding = "KV"
 id = "8f6ee5b816384dc4a5736660603e0325"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "rabbit-server-list"
+database_id = "1167ecc9-c3e5-41c8-ae72-5e10c653cc40"
