@@ -74,6 +74,12 @@ export default class Validate{
 		return Object.keys(this.countryList).includes(country);
 	}
 
+	static description(description){
+		if(typeof(description) !== 'string') return false;
+		if(!(description.length >= 50 && description.length <= 10_000)) return false;
+		return true;
+	}
+
 	static minecraftServerVersion(version){
 		if(typeof(version) !== 'string') return false;
 		return this.minecraftServerVersionList.includes(version);
@@ -85,6 +91,12 @@ export default class Validate{
 		for(let i = 0; i < category.length; i++){
 			if(!this.minecraftServerCategoryList.includes(category[i])) return false;
 		}
+		return true;
+	}
+
+	static minecraftVotifierToken(token){
+		if(typeof(token) !== 'string') return false;
+		if(!(token.length >= 4 && token.length <= 40)) return false;
 		return true;
 	}
 
