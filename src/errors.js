@@ -12,6 +12,18 @@ export default class Errors{
 		1007: 'Password is incorrect.',
 		1008: 'The token is incorrect or it has expired. Please Sign in again.',
 		1009: 'Something went wrong while trying to perform this action. Please try again later.',
+		1010: 'Server name is invalid.',
+		1011: 'Server IP is invalid.',
+		1012: 'Server port is invalid.',
+		1013: 'Server website is invalid.',
+		1014: 'Server communication is invalid.',
+		1015: 'Server version is invalid.',
+		1016: 'Server categories are invalid.',
+		1017: 'Server country is invalid.',
+		1018: 'Server description is invalid.',
+		1019: 'Votifier IP is invalid.',
+		1020: 'Votifier Port is invalid.',
+		1021: 'Votifier Token is invalid.',
 	};
 
 	static get(id){
