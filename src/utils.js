@@ -106,4 +106,10 @@ export default class Utils{
 
 		return { user: decoded.substring(0, index), pass: decoded.substring(index + 1) };
 	}
+
+	static async ownsServer(server, username, id){
+		let { results } = await this.env.DB.prepare("SELECT * FROM " + server + " WHERE id = ? AND owner = ?").bind(id, username).all();
+		if(results.length === 1) return true;
+		return false;
+	}
 }

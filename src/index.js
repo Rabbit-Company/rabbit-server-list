@@ -82,7 +82,20 @@ router.post('/v1/servers/minecraft', async request => {
 	let message = await Minecraft.list(1);
 	return Utils.jsonResponse(message);
 }).delete(async request => {
+	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
 
+	const auth = Utils.basicAuthentication(request.req.headers.get('Authorization'));
+	if(auth === null) return Utils.jsonResponse(Errors.getJson(1006));
+
+	let data = {};
+	try{
+		data = await request.req.json();
+	}catch{
+		return Utils.jsonResponse(Errors.getJson(1000));
+	}
+
+	let message = await Minecraft.delete(auth.user, auth.pass, data['id']);
+	return Utils.jsonResponse(message);
 });
 
 router.get('/v1/servers/minecraft/:page', async request => {

@@ -24,6 +24,8 @@ export default class Errors{
 		1019: 'Votifier IP is invalid.',
 		1020: 'Votifier Port is invalid.',
 		1021: 'Votifier Token is invalid.',
+		1022: 'ID is invalid.',
+		9999: 'Your do not have permission to perform this action.'
 	};
 
 	static get(id){
