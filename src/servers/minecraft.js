@@ -16,7 +16,7 @@ export default class Minecraft{
 		if(data !== null) return { 'error': 0, 'info': 'success', 'data': JSON.parse(data) };
 
 		try{
-			const { results } = await Utils.env.DB.prepare("SELECT id, owner, name, ip, port, website, communication, version, categories, country, language, logo, banner, description, players, players_max, online, votes, votes_total, created, updated FROM minecraft LIMIT " + limit + " OFFSET " + offset).all();
+			const { results } = await Utils.env.DB.prepare("SELECT id, owner, name, ip, port, website, communication, version, categories, country, description, players, players_max, online, votes, votes_total, created, updated FROM minecraft LIMIT " + limit + " OFFSET " + offset).all();
 			await Utils.setValue('servers-minecraft-list-' + page, JSON.stringify(results), 3600);
 			return { 'error': 0, 'info': 'success', 'data': results };
 		}catch{
