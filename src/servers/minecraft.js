@@ -5,7 +5,6 @@ import Errors from "../errors.js";
 export default class Minecraft{
 
 	static async list(page = 1){
-
 		if(!Validate.isPositiveInteger(page)) page = 1;
 		if(page > 100) page = 100;
 
@@ -22,7 +21,21 @@ export default class Minecraft{
 		}catch{
 			return Errors.getJson(1009);
 		}
+	}
 
+	static async get(id){
+		if(!Validate.isPositiveInteger(id)) return Errors.getJson(1022);
+
+		let data = await Utils.getValue('server-minecraft-' + id, 3600);
+		if(data !== null) return { 'error': 0, 'info': 'success', 'data': JSON.parse(data) };
+
+		try{
+			const { results } = await Utils.env.DB.prepare("SELECT id, owner, name, ip, port, website, communication, version, categories, country, description, players, players_max, online, votes, votes_total, created, updated FROM minecraft WHERE id = ?").bind(id).all();
+			await Utils.setValue('server-minecraft-' + id, JSON.stringify(results), 3600);
+			return { 'error': 0, 'info': 'success', 'data': results };
+		}catch{
+			return Errors.getJson(1009);
+		}
 	}
 
 	static async add(username, token, data){
