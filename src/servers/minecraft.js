@@ -30,9 +30,9 @@ export default class Minecraft{
 		if(data !== null) return { 'error': 0, 'info': 'success', 'data': JSON.parse(data) };
 
 		try{
-			const { results } = await Utils.env.DB.prepare("SELECT id, owner, name, ip, port, website, communication, version, categories, country, description, players, players_max, online, votes, votes_total, created, updated FROM minecraft WHERE id = ?").bind(id).all();
-			await Utils.setValue('server-minecraft-' + id, JSON.stringify(results), 3600);
-			return { 'error': 0, 'info': 'success', 'data': results };
+			const result = await Utils.env.DB.prepare("SELECT id, owner, name, ip, port, website, communication, version, categories, country, description, players, players_max, online, votes, votes_total, created, updated FROM minecraft WHERE id = ?").bind(id).first();
+			await Utils.setValue('server-minecraft-' + id, JSON.stringify(result), 3600);
+			return { 'error': 0, 'info': 'success', 'data': result };
 		}catch{
 			return Errors.getJson(1009);
 		}
