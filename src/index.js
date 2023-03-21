@@ -1,6 +1,5 @@
 import Utils from './utils.js';
 import Errors from './errors.js';
-import Accounts from './accounts.js';
 import Account from './account.js';
 
 // Servers
@@ -109,6 +108,22 @@ router.get('/v1/server/minecraft/:id', async request => {
 	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
 
 	let message = await Minecraft.get(request.req.param('id'));
+	return Utils.jsonResponse(message);
+}).put(async request => {
+	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
+
+	if(!request.req.headers.has('Content-Type')) return Utils.jsonResponse(Errors.getJson(1023));
+	let contentType = request.req.headers.get('Content-Type');
+	if(contentType !== 'image/gif') return Utils.jsonResponse(Errors.getJson(1024));
+
+	let fileSize = request.req.headers.get('Content-Length');
+	if(fileSize > 1_000_000) return Utils.jsonResponse(Errors.getJson(1025));
+
+	const auth = Utils.basicAuthentication(request.req.headers.get('Authorization'));
+	if(auth === null) return Utils.jsonResponse(Errors.getJson(1006));
+
+	const options = { httpMetadata: { contentType: contentType, } };
+	let message = await Minecraft.saveBanner(auth.user, auth.pass, request.req.param('id'), request.req.body, options);
 	return Utils.jsonResponse(message);
 });
 

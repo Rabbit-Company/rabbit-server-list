@@ -25,6 +25,9 @@ export default class Errors{
 		1020: 'Votifier Port is invalid.',
 		1021: 'Votifier Token is invalid.',
 		1022: 'ID is invalid.',
+		1023: 'Content-Type header needs to be provided.',
+		1024: 'File type is not supported.',
+		1025: 'Image can not be bigger than 1MB. Please choose smaller image.',
 		9999: 'Your do not have permission to perform this action.'
 	};
 

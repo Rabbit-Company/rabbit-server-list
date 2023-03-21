@@ -93,4 +93,17 @@ export default class Minecraft{
 		return Errors.getJson(0);
 	}
 
+	static async saveBanner(username, token, id, image, options){
+		if(!Validate.username(username)) return Errors.getJson(1001);
+		if(!Validate.token(token)) return Errors.getJson(1004);
+
+		if(!Validate.isPositiveInteger(id)) return Errors.getJson(1022);
+
+		if(!(await Utils.authenticate(username, token))) return Errors.getJson(1008);
+		if(!(await Utils.ownsServer('minecraft', username, id))) return Errors.getJson(9999);
+
+		await Utils.env.R2.put('servers/minecraft/banners/' + id, image, options);
+		return Errors.getJson(0);
+	}
+
 }
