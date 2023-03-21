@@ -1,11 +1,12 @@
 import Utils from "../utils.js";
+import Validate from "../validate.js";
 import Errors from "../errors.js";
 
 export default class Minecraft{
 
 	static async list(page = 1){
 
-		if(!Utils.isPositiveInteger(page)) page = 1;
+		if(!Validate.isPositiveInteger(page)) page = 1;
 		if(page > 100) page = 100;
 
 		let limit = 20;
@@ -22,6 +23,13 @@ export default class Minecraft{
 			return Errors.getJson(1009);
 		}
 
+	}
+
+	static async add(username, token, data){
+		if(!Validate.username(username)) return Errors.getJson(1001);
+		if(!Validate.token(token)) return Errors.getJson(1004);
+
+		if(!(await Utils.authenticate(username, token))) return Errors.getJson(1008);
 	}
 
 }
