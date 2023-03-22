@@ -28,6 +28,7 @@ export default class Errors{
 		1023: 'Content-Type header needs to be provided.',
 		1024: 'File type is not supported.',
 		1025: 'Image can not be bigger than 1MB. Please choose smaller image.',
+		1026: 'Failed to fetch the image.',
 		9999: 'Your do not have permission to perform this action.'
 	};
 

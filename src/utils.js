@@ -47,6 +47,20 @@ export default class Utils{
 		return value;
 	}
 
+	static async setCacheR2(key, value, cacheTime = 60){
+		let cacheKey = "https://api.rabbitserverlist.com?key=" + key;
+		let nres = new Response(value);
+		nres.headers.append('Cache-Control', 's-maxage=' + cacheTime);
+		await this.cache.put(cacheKey, nres);
+	}
+
+	static async getCacheR2(key){
+		let cacheKey = "https://api.rabbitserverlist.com?key=" + key;
+		let res = await this.cache.match(cacheKey);
+		if(res) return res.body;
+		return null;
+	}
+
 	static async deleteValue(key){
 		await this.env.KV.delete(key);
 		await this.cache.delete("https://api.rabbitserverlist.com?key=" + key);

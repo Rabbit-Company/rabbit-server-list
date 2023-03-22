@@ -109,6 +109,15 @@ router.get('/v1/server/minecraft/:id', async request => {
 
 	let message = await Minecraft.get(request.req.param('id'));
 	return Utils.jsonResponse(message);
+});
+
+router.get('/v1/server/minecraft/:id/banner', async request => {
+	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
+
+	let banner = await Minecraft.getBanner(request.req.param('id'));
+	if(banner !== null) return banner;
+
+	return Utils.jsonResponse(Errors.getJson(1026));
 }).put(async request => {
 	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
 
