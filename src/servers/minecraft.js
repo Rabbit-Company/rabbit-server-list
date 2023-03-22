@@ -112,24 +112,27 @@ export default class Minecraft{
 		let CacheKey = 'minecraft-banner-' + id;
 		let R2Key = 'servers/minecraft/banners/' + id;
 
+		let headers = new Headers();
+		headers.set('Content-Type', 'image/gif');
+
 		let banner = await Utils.getCacheR2(CacheKey);
-		if(banner !== null) return new Response(banner);
+		if(banner !== null) return new Response(banner, { headers });
 
 		banner = await Utils.env.R2.get(R2Key);
 		if(banner !== null){
 			let body = banner.body.tee();
 			await Utils.setCacheR2(CacheKey, body[0], 3600);
-			return new Response(body[1]);
+			return new Response(body[1], { headers });
 		}
 
 		banner = await Utils.getCacheR2('minecraft-banner-default');
-		if(banner !== null) return new Response(banner);
+		if(banner !== null) return new Response(banner, { headers });
 
 		banner = await Utils.env.R2.get('servers/minecraft/banners/default');
 		if(banner !== null){
 			let body = banner.body.tee();
 			await Utils.setCacheR2('minecraft-banner-default', body[0], 3600);
-			return new Response(body[1]);
+			return new Response(body[1], { headers });
 		}
 
 		return null;
