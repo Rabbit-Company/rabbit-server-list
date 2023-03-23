@@ -15,7 +15,7 @@ export default class Minecraft{
 		if(data !== null) return { 'error': 0, 'info': 'success', 'data': JSON.parse(data) };
 
 		try{
-			const { results } = await Utils.env.DB.prepare("SELECT id, owner, name, ip, port, website, communication, version, categories, country, description, players, players_max, online, votes, votes_total, created, updated FROM minecraft LIMIT " + limit + " OFFSET " + offset).all();
+			const { results } = await Utils.env.DB.prepare("SELECT id, owner, name, ip, port, bedrock_ip, bedrock_port, website, discord, twitter, store, trailer, version, categories, country, description, players, players_max, online, votes, votes_total, created, updated FROM minecraft LIMIT " + limit + " OFFSET " + offset).all();
 			await Utils.setValue('servers-minecraft-list-' + page, JSON.stringify(results), 3600);
 			return { 'error': 0, 'info': 'success', 'data': results };
 		}catch{
@@ -30,7 +30,7 @@ export default class Minecraft{
 		if(data !== null) return { 'error': 0, 'info': 'success', 'data': JSON.parse(data) };
 
 		try{
-			const result = await Utils.env.DB.prepare("SELECT id, owner, name, ip, port, website, communication, version, categories, country, description, players, players_max, online, votes, votes_total, created, updated FROM minecraft WHERE id = ?").bind(id).first();
+			const result = await Utils.env.DB.prepare("SELECT id, owner, name, ip, port, bedrock_ip, bedrock_port, website, discord, twitter, store, trailer, version, categories, country, description, players, players_max, online, votes, votes_total, created, updated FROM minecraft WHERE id = ?").bind(id).first();
 			await Utils.setValue('server-minecraft-' + id, JSON.stringify(result), 3600);
 			return { 'error': 0, 'info': 'success', 'data': result };
 		}catch{
@@ -51,7 +51,10 @@ export default class Minecraft{
 		if(!Validate.description(data['description'])) return Errors.getJson(1018);
 
 		if(data['website'] !== null && (!Validate.website(data['website']))) return Errors.getJson(1013);
-		if(data['communication'] !== null && (!Validate.serverCommunication(data['communication']))) return Errors.getJson(1014);
+		if(data['discord'] !== null && (!Validate.website(data['discord']))) return Errors.getJson(1014);
+		if(data['twitter'] !== null && (!Validate.twitter(data['twitter']))) return Errors.getJson(1027);
+		if(data['store'] !== null && (!Validate.website(data['store']))) return Errors.getJson(1028);
+		if(data['trailer'] !== null && (!Validate.youtubeVideo(data['trailer']))) return Errors.getJson(1029);
 
 		if(data['votifierIP'] !== null && (!Validate.ip(data['votifierIP']))) return Errors.getJson(1019);
 		if(data['votifierPort'] !== null && (!Validate.port(data['votifierPort']))) return Errors.getJson(1020);
@@ -66,8 +69,8 @@ export default class Minecraft{
 		categories = categories.substring(0, categories.length-1);
 
 		try{
-			await Utils.env.DB.prepare("INSERT INTO minecraft(owner, name, ip, port, website, communication, version, categories, country, description, votifierIP, votifierPort, votifierToken, created, updated) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
-			.bind(username, data['name'], data['ip'], data['port'], data['website'], data['communication'], data['version'], categories, data['country'], data['description'], data['votifierIP'], data['votifierPort'], data['votifierToken'], Utils.date, Utils.date).run();
+			await Utils.env.DB.prepare("INSERT INTO minecraft(owner, name, ip, port, bedrock_ip, bedrock_port, website, discord, twitter, store, trailer, version, categories, country, description, votifierIP, votifierPort, votifierToken, created, updated) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+			.bind(username, data['name'], data['ip'], data['port'], data['bedrock_ip'], data['bedrock_port'], data['website'], data['discord'], data['twitter'], data['store'], data['trailer'], data['version'], categories, data['country'], data['description'], data['votifierIP'], data['votifierPort'], data['votifierToken'], Utils.date, Utils.date).run();
 		}catch{
 			return Errors.getJson(1009);
 		}

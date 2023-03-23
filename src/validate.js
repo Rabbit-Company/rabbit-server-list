@@ -47,6 +47,23 @@ export default class Validate{
 		return true;
 	}
 
+	static twitter(twitter){
+		if(typeof(twitter) !== 'string') return false;
+		if(!this.URL(twitter)) return false;
+		if(!twitter.startsWith('https://twitter.com/')) return false;
+		return true;
+	}
+
+	static youtubeVideo(video){
+		if(typeof(video) !== 'string') return false;
+		if(!this.URL(video)) return false;
+		let validLinks = ['https://www.youtube.com/watch?v=', 'https://youtu.be/'];
+		for(let i = 0; i < validLinks.length; i++){
+			if(video.startsWith(validLinks[i])) return true;
+		}
+		return false;
+	}
+
 	static ip(ip){
 		if(typeof(ip) !== 'string') return false;
 		return /^([A-Za-z0-9\-. ]{4,50})$/.test(ip);

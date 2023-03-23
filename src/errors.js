@@ -16,7 +16,7 @@ export default class Errors{
 		1011: 'Server IP is invalid.',
 		1012: 'Server port is invalid.',
 		1013: 'Server website is invalid.',
-		1014: 'Server communication is invalid.',
+		1014: 'Server discord is invalid.',
 		1015: 'Server version is invalid.',
 		1016: 'Server categories are invalid.',
 		1017: 'Server country is invalid.',
@@ -29,6 +29,9 @@ export default class Errors{
 		1024: 'File type is not supported.',
 		1025: 'Image can not be bigger than 1MB. Please choose smaller image.',
 		1026: 'Failed to fetch the image.',
+		1027: 'Server twitter is invalid.',
+		1028: 'Server store is invalid.',
+		1029: 'Server trailer is invalid.',
 		9999: 'Your do not have permission to perform this action.'
 	};
 
