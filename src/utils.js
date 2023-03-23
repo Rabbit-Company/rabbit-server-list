@@ -6,8 +6,8 @@ export default class Utils{
 
 	static async initialize(env, ip){
 		this.env = env;
-		this.date = new Date().toISOString().split('T')[0];
-		this.hashedIP = await this.generateHash('rabbitcompany-' + ip + this.date, 'SHA-256');
+		this.date = new Date().toISOString();
+		this.hashedIP = await this.generateHash('rabbitcompany-' + ip + this.date.split('T')[0], 'SHA-256');
 	}
 
 	static jsonResponse(json, statusCode = 200){
