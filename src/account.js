@@ -45,11 +45,12 @@ export default class Account{
 
 		let message = Errors.getJson(0);
 		try{
-			let { results } = await Utils.env.DB.prepare("SELECT * FROM accounts WHERE username = ?").bind(username).all();
+			let { results } = await Utils.env.DB.prepare("SELECT email, created, accessed FROM accounts WHERE username = ?").bind(username).all();
 			if(results.length !== 1) return Errors.getJson(1007);
 
 			let userData = results[0];
 			message.data = {};
+			message.data['email'] = userData.email;
 			message.data['accessed'] = userData.accessed;
 			message.data['created'] = userData.created;
 		}catch{
