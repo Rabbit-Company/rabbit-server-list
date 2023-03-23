@@ -97,7 +97,7 @@ router.post('/v1/servers/minecraft', async request => {
 	return Utils.jsonResponse(message);
 });
 
-router.get('/v1/servers/minecraft/:page', async request => {
+router.get('/v1/servers/minecraft/page/:page', async request => {
 	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
 
 	let message = await Minecraft.list(request.req.param('page'));
