@@ -109,33 +109,29 @@ export default class Minecraft{
 	static async getBanner(id){
 		if(!Validate.isPositiveInteger(id)) return Errors.getJson(1022);
 
-		let CacheKey = 'minecraft-banner-' + id;
-		let R2Key = 'servers/minecraft/banners/' + id;
-
 		let headers = new Headers();
 		headers.set('Content-Type', 'image/gif');
 
-		let banner = await Utils.getCacheR2(CacheKey);
+		let banner = await Utils.getCacheR2('minecraft-banner-' + id);
 		if(banner !== null) return new Response(banner, { headers });
 
-		banner = await Utils.env.R2.get(R2Key);
+		banner = await Utils.env.R2.get('servers/minecraft/banners/' + id);
 		if(banner !== null){
 			let body = banner.body.tee();
-			await Utils.setCacheR2(CacheKey, body[0], 3600);
+			await Utils.setCacheR2('minecraft-banner-' + id, body[0], 3600);
 			return new Response(body[1], { headers });
 		}
 
-		let headers2 = new Headers();
-		headers2.set('Content-Type', 'image/png');
+		headers.set('Content-Type', 'image/png');
 
 		banner = await Utils.getCacheR2('minecraft-banner-default');
-		if(banner !== null) return new Response(banner, { headers2 });
+		if(banner !== null) return new Response(banner, { headers });
 
 		banner = await Utils.env.R2.get('servers/minecraft/banners/default');
 		if(banner !== null){
 			let body = banner.body.tee();
 			await Utils.setCacheR2('minecraft-banner-default', body[0], 3600);
-			return new Response(body[1], { headers2 });
+			return new Response(body[1], { headers });
 		}
 
 		return null;
