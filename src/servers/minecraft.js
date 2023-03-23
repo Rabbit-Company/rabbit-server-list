@@ -11,7 +11,7 @@ export default class Minecraft{
 		let limit = 20;
 		let offset = limit * (page - 1);
 
-		let data = await Utils.getValue('servers-minecraft-list-' + page, 3600);
+		let data = await Utils.getValue('servers-minecraft-list-' + page);
 		if(data !== null) return { 'error': 0, 'info': 'success', 'data': JSON.parse(data) };
 
 		try{
@@ -26,7 +26,7 @@ export default class Minecraft{
 	static async get(id){
 		if(!Validate.isPositiveInteger(id)) return Errors.getJson(1022);
 
-		let data = await Utils.getValue('server-minecraft-' + id, 3600);
+		let data = await Utils.getValue('server-minecraft-' + id);
 		if(data !== null) return { 'error': 0, 'info': 'success', 'data': JSON.parse(data) };
 
 		try{
@@ -138,6 +138,8 @@ export default class Minecraft{
 		if(!(await Utils.ownsServer('minecraft', username, id))) return Errors.getJson(9999);
 
 		try{
+			await Utils.deleteValue('server-minecraft-' + id);
+			await Utils.env.R2.delete('servers/minecraft/banners/' + id);
 			await Utils.env.DB.prepare("DELETE FROM minecraft WHERE id = ?").bind(id).run();
 		}catch{
 			return Errors.getJson(1009);
