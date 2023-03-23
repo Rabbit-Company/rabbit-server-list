@@ -16,7 +16,7 @@ export default class Minecraft{
 
 		try{
 			const { results } = await Utils.env.DB.prepare("SELECT id, owner, name, ip, port, bedrock_ip, bedrock_port, website, discord, twitter, store, trailer, version, categories, country, description, players, players_max, online, votes, votes_total, created, updated FROM minecraft LIMIT " + limit + " OFFSET " + offset).all();
-			await Utils.setValue('servers-minecraft-list-' + page, JSON.stringify(results), 3600);
+			await Utils.setValue('servers-minecraft-list-' + page, JSON.stringify(results), 600);
 			return { 'error': 0, 'info': 'success', 'data': results };
 		}catch{
 			return Errors.getJson(1009);
@@ -31,7 +31,7 @@ export default class Minecraft{
 
 		try{
 			const result = await Utils.env.DB.prepare("SELECT id, owner, name, ip, port, bedrock_ip, bedrock_port, website, discord, twitter, store, trailer, version, categories, country, description, players, players_max, online, votes, votes_total, created, updated FROM minecraft WHERE id = ?").bind(id).first();
-			await Utils.setValue('server-minecraft-' + id, JSON.stringify(result), 3600);
+			await Utils.setValue('server-minecraft-' + id, JSON.stringify(result), 600);
 			return { 'error': 0, 'info': 'success', 'data': result };
 		}catch{
 			return Errors.getJson(1009);
