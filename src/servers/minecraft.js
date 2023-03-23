@@ -81,6 +81,53 @@ export default class Minecraft{
 		return Errors.getJson(0);
 	}
 
+	static async edit(username, token, id, data){
+		if(!Validate.username(username)) return Errors.getJson(1001);
+		if(!Validate.token(token)) return Errors.getJson(1004);
+
+		if(!Validate.isPositiveInteger(id)) return Errors.getJson(1022);
+
+		if(!Validate.serverName(data['name'])) return Errors.getJson(1010);
+		if(!Validate.ip(data['ip'])) return Errors.getJson(1011);
+		if(!Validate.port(data['port'])) return Errors.getJson(1012);
+		if(!Validate.minecraftServerVersion(data['version'])) return Errors.getJson(1015);
+		if(!Validate.minecraftServerCategory(data['categories'])) return Errors.getJson(1016);
+		if(!Validate.country(data['country'])) return Errors.getJson(1017);
+		if(!Validate.description(data['description'])) return Errors.getJson(1018);
+
+		if(data['bedrock_ip'] !== null && (!Validate.ip(data['bedrock_ip']))) return Errors.getJson(1030);
+		if(data['bedrock_port'] !== null && (!Validate.port(data['bedrock_port']))) return Errors.getJson(1031);
+
+		if(data['website'] !== null && (!Validate.website(data['website']))) return Errors.getJson(1013);
+		if(data['discord'] !== null && (!Validate.website(data['discord']))) return Errors.getJson(1014);
+		if(data['twitter'] !== null && (!Validate.twitter(data['twitter']))) return Errors.getJson(1027);
+		if(data['store'] !== null && (!Validate.website(data['store']))) return Errors.getJson(1028);
+		if(data['trailer'] !== null && (!Validate.youtubeVideo(data['trailer']))) return Errors.getJson(1029);
+
+		if(data['votifierIP'] !== null && (!Validate.ip(data['votifierIP']))) return Errors.getJson(1019);
+		if(data['votifierPort'] !== null && (!Validate.port(data['votifierPort']))) return Errors.getJson(1020);
+		if(data['votifierToken'] !== null && (!Validate.minecraftVotifierToken(data['votifierToken']))) return Errors.getJson(1021);
+
+		if(!(await Utils.authenticate(username, token))) return Errors.getJson(1008);
+		if(!(await Utils.ownsServer('minecraft', username, id))) return Errors.getJson(9999);
+
+		let categories = "";
+		for(let i = 0; i < data['categories'].length; i++){
+			categories += data['categories'][i] + ',';
+		}
+		categories = categories.substring(0, categories.length-1);
+
+		try{
+			await Utils.env.DB.prepare("UPDATE minecraft SET name = ?, ip = ?, port = ?, bedrock_ip = ?, bedrock_port = ?, website = ?, discord = ?, twitter = ?, store = ?, trailer = ?, version = ?, categories = ?, country = ?, description = ?, votifierIP = ?, votifierPort = ?, votifierToken = ?, updated = ? WHERE id = ?")
+			.bind(data['name'], data['ip'], data['port'], data['bedrock_ip'], data['bedrock_port'], data['website'], data['discord'], data['twitter'], data['store'], data['trailer'], data['version'], categories, data['country'], data['description'], data['votifierIP'], data['votifierPort'], data['votifierToken'], Utils.date, id).run();
+			await Utils.deleteValue('server-minecraft-' + id);
+		}catch{
+			return Errors.getJson(1009);
+		}
+
+		return Errors.getJson(0);
+	}
+
 	static async delete(username, token, id){
 		if(!Validate.username(username)) return Errors.getJson(1001);
 		if(!Validate.token(token)) return Errors.getJson(1004);
