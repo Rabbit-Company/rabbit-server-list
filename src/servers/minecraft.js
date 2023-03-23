@@ -50,6 +50,9 @@ export default class Minecraft{
 		if(!Validate.country(data['country'])) return Errors.getJson(1017);
 		if(!Validate.description(data['description'])) return Errors.getJson(1018);
 
+		if(data['bedrock_ip'] !== null && (!Validate.ip(data['bedrock_ip']))) return Errors.getJson(1030);
+		if(data['bedrock_port'] !== null && (!Validate.port(data['bedrock_port']))) return Errors.getJson(1031);
+
 		if(data['website'] !== null && (!Validate.website(data['website']))) return Errors.getJson(1013);
 		if(data['discord'] !== null && (!Validate.website(data['discord']))) return Errors.getJson(1014);
 		if(data['twitter'] !== null && (!Validate.twitter(data['twitter']))) return Errors.getJson(1027);

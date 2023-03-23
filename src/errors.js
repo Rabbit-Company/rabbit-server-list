@@ -32,6 +32,8 @@ export default class Errors{
 		1027: 'Server twitter is invalid.',
 		1028: 'Server store is invalid.',
 		1029: 'Server trailer is invalid.',
+		1030: 'Bedrock IP is invalid.',
+		1031: 'Bedrock Port is invalid.',
 		9999: 'Your do not have permission to perform this action.'
 	};
 
