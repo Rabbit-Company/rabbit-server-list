@@ -12,7 +12,7 @@ const router = new Hono();
 router.use('*', cors({
 	origin: '*',
 	allowHeaders: ['*'],
-	allowMethods: ['POST', 'PUT', 'GET', 'OPTIONS'],
+	allowMethods: ['POST', 'PUT', 'DELETE', 'GET', 'OPTIONS'],
 	maxAge: 86400,
 	credentials: true,
 }));
