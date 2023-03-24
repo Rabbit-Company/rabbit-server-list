@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid';
+
 export default class Utils{
 	static env;
 	static date;
@@ -125,5 +127,9 @@ export default class Utils{
 		let { results } = await this.env.DB.prepare("SELECT * FROM " + server + " WHERE id = ? AND owner = ?").bind(id, username).all();
 		if(results.length === 1) return true;
 		return false;
+	}
+
+	static async generateSecret(){
+		return await this.generateHash(uuidv4());
 	}
 }

@@ -60,6 +60,16 @@ router.get('/v1/account/token', async request => {
 	return Utils.jsonResponse(message);
 });
 
+router.get('/v1/account/servers/minecraft', async request => {
+	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
+
+	const auth = Utils.basicAuthentication(request.req.headers.get('Authorization'));
+	if(auth === null) return Utils.jsonResponse(Errors.getJson(1006));
+
+	let message = await Minecraft.listOwner(auth.user, auth.pass);
+	return Utils.jsonResponse(message);
+});
+
 router.post('/v1/servers/minecraft', async request => {
 	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
 

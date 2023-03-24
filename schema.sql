@@ -31,6 +31,7 @@ CREATE TABLE minecraft (
 	votifierIP TEXT,
 	votifierPort INTEGER DEFAULT 8192,
 	votifierToken TEXT,
+	secretToken TEXT NOT NULL,
 	created TEXT NOT NULL,
 	updated TEXT NOT NULL,
 	UNIQUE(ip, port)
