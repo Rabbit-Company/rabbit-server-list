@@ -27,7 +27,7 @@ export default class Errors{
 		1022: 'ID is invalid.',
 		1023: 'Content-Type header needs to be provided.',
 		1024: 'File type is not supported.',
-		1025: 'Image can not be bigger than 1MB. Please choose smaller image.',
+		1025: 'Image can not be bigger than 3MB. Please choose smaller image.',
 		1026: 'Failed to fetch the image.',
 		1027: 'Server twitter is invalid.',
 		1028: 'Server store is invalid.',

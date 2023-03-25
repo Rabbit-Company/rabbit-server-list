@@ -144,7 +144,7 @@ router.get('/v1/server/minecraft/:id/banner', async request => {
 	if(contentType !== 'image/gif') return Utils.jsonResponse(Errors.getJson(1024));
 
 	let fileSize = request.req.headers.get('Content-Length');
-	if(fileSize > 1_000_000) return Utils.jsonResponse(Errors.getJson(1025));
+	if(fileSize > 3_000_000) return Utils.jsonResponse(Errors.getJson(1025));
 
 	const auth = Utils.basicAuthentication(request.req.headers.get('Authorization'));
 	if(auth === null) return Utils.jsonResponse(Errors.getJson(1006));
