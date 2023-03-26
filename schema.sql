@@ -25,7 +25,7 @@ CREATE TABLE minecraft (
 	description TEXT NOT NULL,
 	players INTEGER NOT NULL DEFAULT 0,
 	players_max INTEGER NOT NULL DEFAULT 0,
-	online INTEGER NOT NULL DEFAULT 0,
+	online TEXT,
 	votes INTEGER NOT NULL DEFAULT 0,
 	votes_total INTEGER NOT NULL DEFAULT 0,
 	votifierIP TEXT,

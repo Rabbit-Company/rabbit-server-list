@@ -136,8 +136,8 @@ export default class Minecraft{
 		categories = categories.substring(0, categories.length-1);
 
 		try{
-			await Utils.env.DB.prepare("UPDATE minecraft SET name = ?, ip = ?, port = ?, bedrock_ip = ?, bedrock_port = ?, website = ?, discord = ?, twitter = ?, store = ?, trailer = ?, version = ?, categories = ?, country = ?, description = ?, votifierIP = ?, votifierPort = ?, votifierToken = ?, secretToken = ?, updated = ? WHERE id = ?")
-			.bind(data['name'], data['ip'], data['port'], data['bedrock_ip'], data['bedrock_port'], data['website'], data['discord'], data['twitter'], data['store'], data['trailer'], data['version'], categories, data['country'], data['description'], data['votifierIP'], data['votifierPort'], data['votifierToken'], data['secretToken'], Utils.date, id).run();
+			await Utils.env.DB.prepare("UPDATE minecraft SET name = ?, ip = ?, port = ?, bedrock_ip = ?, bedrock_port = ?, website = ?, discord = ?, twitter = ?, store = ?, trailer = ?, version = ?, categories = ?, country = ?, description = ?, votifierIP = ?, votifierPort = ?, votifierToken = ?, secretToken = ? WHERE id = ?")
+			.bind(data['name'], data['ip'], data['port'], data['bedrock_ip'], data['bedrock_port'], data['website'], data['discord'], data['twitter'], data['store'], data['trailer'], data['version'], categories, data['country'], data['description'], data['votifierIP'], data['votifierPort'], data['votifierToken'], data['secretToken'], id).run();
 			await Utils.deleteValue('server-minecraft-' + id);
 		}catch{
 			return Errors.getJson(1009);
