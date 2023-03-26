@@ -60,7 +60,25 @@ router.get('/v1/account/token', async request => {
 	return Utils.jsonResponse(message);
 });
 
-router.get('/v1/account/servers/minecraft', async request => {
+router.post('/v1/account/servers/minecraft', async request => {
+	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
+
+	const auth = Utils.basicAuthentication(request.req.headers.get('Authorization'));
+	if(auth === null) return Utils.jsonResponse(Errors.getJson(1006));
+
+	if(auth.user !== 'crawler') return Utils.jsonResponse(Errors.getJson(9999));
+	if(auth.pass !== request.env.CRAWLER_SECRET_TOKEN) return Utils.jsonResponse(Errors.getJson(9999));
+
+	let data = {};
+	try{
+		data = await request.req.json();
+	}catch{
+		return Utils.jsonResponse(Errors.getJson(1000));
+	}
+
+	let message = await Minecraft.updateCrawlerData(data);
+	return Utils.jsonResponse(message);
+}).get(async request => {
 	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
 
 	const auth = Utils.basicAuthentication(request.req.headers.get('Authorization'));
@@ -70,7 +88,7 @@ router.get('/v1/account/servers/minecraft', async request => {
 	return Utils.jsonResponse(message);
 });
 
-router.post('/v1/servers/minecraft', async request => {
+router.post('/v1/servers/minecraft/crawler', async request => {
 	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
 
 	const auth = Utils.basicAuthentication(request.req.headers.get('Authorization'));
@@ -84,11 +102,6 @@ router.post('/v1/servers/minecraft', async request => {
 	}
 
 	let message = await Minecraft.add(auth.user, auth.pass, data);
-	return Utils.jsonResponse(message);
-}).get(async request => {
-	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
-
-	let message = await Minecraft.list(1);
 	return Utils.jsonResponse(message);
 });
 

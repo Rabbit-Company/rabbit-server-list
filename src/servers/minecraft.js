@@ -210,4 +210,8 @@ export default class Minecraft{
 		return null;
 	}
 
+	static async updateCrawlerData(data){
+
+	}
+
 }
