@@ -212,6 +212,9 @@ export default class Minecraft{
 
 	static async updateCrawledData(data){
 
+		if(typeof(data.servers) !== 'object') return Errors.getJson(1000);
+
+		data = data.servers;
 		for(let i = 0; i < data.length; i++){
 			if(!Validate.isPositiveInteger(data[i].players)) continue;
 			if(!Validate.isPositiveInteger(data[i].players_max)) continue;
