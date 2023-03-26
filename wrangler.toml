@@ -14,3 +14,5 @@ database_id = "1167ecc9-c3e5-41c8-ae72-5e10c653cc40"
 [[r2_buckets]]
 binding = 'R2'
 bucket_name = 'rabbitserverlist'
+
+# Don't forget to add CRAWLER_SECRET_TOKEN with: wrangler secret put CRAWLER_SECRET_TOKEN
