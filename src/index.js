@@ -101,7 +101,7 @@ router.post('/v1/servers/minecraft/crawler', async request => {
 		return Utils.jsonResponse(Errors.getJson(1000));
 	}
 
-	let message = await Minecraft.updateCrawlerData(data);
+	let message = await Minecraft.updateCrawledData(data);
 	return Utils.jsonResponse(message);
 });
 

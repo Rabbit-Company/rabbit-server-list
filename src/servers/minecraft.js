@@ -210,8 +210,24 @@ export default class Minecraft{
 		return null;
 	}
 
-	static async updateCrawlerData(data){
+	static async updateCrawledData(data){
 
+		for(let i = 0; i < data.length; i++){
+			if(!Validate.isPositiveInteger(data[i].players)) continue;
+			if(!Validate.isPositiveInteger(data[i].players_max)) continue;
+
+			try{
+				if(data[i].online === true){
+					await Utils.env.DB.prepare("UPDATE minecraft SET players = ?, players_max = ?, online = ?, updated = ? WHERE id = ?")
+					.bind(data[i].players, data[i].players_max, data[i].updated, data[i].updated, data[i].id).run();
+				}else{
+					await Utils.env.DB.prepare("UPDATE minecraft SET players = ?, players_max = ?, updated = ? WHERE id = ?")
+					.bind(data[i].players, data[i].players_max, data[i].updated, data[i].id).run();
+				}
+			}catch{}
+		}
+
+		return Errors.getJson(0);
 	}
 
 }
