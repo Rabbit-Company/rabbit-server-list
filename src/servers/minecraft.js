@@ -215,10 +215,8 @@ export default class Minecraft{
 		if(typeof(data.servers) !== 'object') return Errors.getJson(1000);
 
 		data = data.servers;
+		let updated = 0;
 		for(let i = 0; i < data.length; i++){
-			if(!Validate.isPositiveInteger(data[i].players)) continue;
-			if(!Validate.isPositiveInteger(data[i].players_max)) continue;
-
 			try{
 				if(data[i].online === true){
 					await Utils.env.DB.prepare("UPDATE minecraft SET players = ?, players_max = ?, online = ?, updated = ? WHERE id = ?")
@@ -227,10 +225,11 @@ export default class Minecraft{
 					await Utils.env.DB.prepare("UPDATE minecraft SET players = ?, players_max = ?, updated = ? WHERE id = ?")
 					.bind(data[i].players, data[i].players_max, data[i].updated, data[i].id).run();
 				}
+				updated++;
 			}catch{}
 		}
 
-		return Errors.getJson(0);
+		return { 'error': 0, 'info': 'Success', 'data': { 'total': data.length, 'updated': updated } };
 	}
 
 }
