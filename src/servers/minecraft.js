@@ -87,6 +87,7 @@ export default class Minecraft{
 			let uptimeJson = await uptimeResponse.json();
 			response.data.uptime = uptimeJson.data;
 
+			await Utils.setValue('server-minecraft-stats-' + id, JSON.stringify(response.data), 3600);
 			return response;
 		}catch{
 			return Errors.getJson(1009);
