@@ -226,13 +226,11 @@ export default class Minecraft{
 					.bind(data[i].players, data[i].players_max, data[i].updated, data[i].id).run();
 				}
 
-				/*
 				Utils.env.MAE.writeDataPoint({
 					'blobs': [data[i].online],
 					'doubles': [data[i].players],
 					'indexes': [data[i].id]
 				});
-				*/
 
 				updated++;
 			}catch{}
