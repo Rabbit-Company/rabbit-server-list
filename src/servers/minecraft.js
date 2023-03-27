@@ -15,7 +15,7 @@ export default class Minecraft{
 		if(data !== null) return { 'error': 0, 'info': 'success', 'data': JSON.parse(data) };
 
 		try{
-			const { results } = await Utils.env.DB.prepare("SELECT id, owner, name, ip, port, bedrock_ip, bedrock_port, website, discord, twitter, store, trailer, version, categories, country, description, players, players_max, online, votes, votes_total, created, updated FROM minecraft LIMIT " + limit + " OFFSET " + offset).all();
+			const { results } = await Utils.env.DB.prepare("SELECT id, owner, name, ip, port, bedrock_ip, bedrock_port, website, discord, twitter, store, trailer, version, categories, country, description, players, players_max, online, votes, votes_total, created, updated FROM minecraft ORDER BY votes LIMIT " + limit + " OFFSET " + offset).all();
 			await Utils.setValue('servers-minecraft-list-' + page, JSON.stringify(results), 60);
 			return { 'error': 0, 'info': 'success', 'data': results };
 		}catch{
@@ -225,6 +225,15 @@ export default class Minecraft{
 					await Utils.env.DB.prepare("UPDATE minecraft SET players = ?, players_max = ?, updated = ? WHERE id = ?")
 					.bind(data[i].players, data[i].players_max, data[i].updated, data[i].id).run();
 				}
+
+				/*
+				Utils.env.MAE.writeDataPoint({
+					'blobs': [data[i].online],
+					'doubles': [data[i].players],
+					'indexes': [data[i].id]
+				});
+				*/
+
 				updated++;
 			}catch{}
 		}
