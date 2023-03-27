@@ -19,4 +19,8 @@ bucket_name = 'rabbitserverlist'
 binding = "MAE"
 dataset = "rabbit-server-list-minecraft"
 
+[vars]
+ACCOUNT_ID = "eb996327383b1ba7869926dcb856b4ae"
+
 # Don't forget to add CRAWLER_SECRET_TOKEN with: wrangler secret put CRAWLER_SECRET_TOKEN
+# Don't forget to set the secret Cloudflare token with: wrangler secret put CF_TOKEN

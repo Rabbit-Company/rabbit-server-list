@@ -52,6 +52,48 @@ export default class Minecraft{
 		}
 	}
 
+	static async getStats(id){
+		if(!Validate.isPositiveInteger(id)) return Errors.getJson(1022);
+
+		let data = await Utils.getValue('server-minecraft-stats-' + id);
+		if(data !== null) return { 'error': 0, 'info': 'success', 'data': JSON.parse(data) };
+
+		const dataset = "rabbit-server-list-minecraft";
+		const endpoint = "https://api.cloudflare.com/client/v4/accounts/" + Utils.env.ACCOUNT_ID + "/analytics_engine/sql";
+
+		const query_players = `SELECT toStartOfInterval(timestamp, INTERVAL '1' HOUR) AS hour, SUM(double1) as players FROM '${dataset}' WHERE index1 = '${id}' GROUP BY hour`;
+		const query_uptime = `SELECT toStartOfInterval(timestamp, INTERVAL '1' HOUR) AS hour, ((SUM(double2) / COUNT()) * 100) as uptime FROM '${dataset}' WHERE index1 = '${id}' GROUP BY hour`;
+
+		let options = {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'text/plain',
+				'Accept': 'application/json',
+				'Authorization': `Bearer ${Utils.env.CF_TOKEN}`,
+			},
+			body: query_players,
+		}
+
+		let response = { 'error': 0, 'info': 'success', 'data': { 'players': {}, 'uptime': {} }};
+
+		try{
+			const playersResponse = await fetch(endpoint, options);
+			let playersJson = await playersResponse.json();
+			response.data.players = playersJson.data;
+
+			options.body = query_uptime;
+
+			const uptimeResponse = await fetch(endpoint, options);
+			let uptimeJson = await uptimeResponse.json();
+			response.data.uptime = uptimeJson.data;
+
+			return response;
+		}catch{
+			return Errors.getJson(1009);
+		}
+
+	}
+
 	static async add(username, token, data){
 		if(!Validate.username(username)) return Errors.getJson(1001);
 		if(!Validate.token(token)) return Errors.getJson(1004);
@@ -226,9 +268,9 @@ export default class Minecraft{
 					.bind(data[i].players, data[i].players_max, data[i].updated, data[i].id).run();
 				}
 
+				let uptime = (data[i].online) ? 1 : 0;
 				Utils.env.MAE.writeDataPoint({
-					'blobs': [data[i].online],
-					'doubles': [data[i].players],
+					'doubles': [data[i].players, uptime],
 					'indexes': [data[i].id]
 				});
 

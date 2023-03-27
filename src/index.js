@@ -142,6 +142,13 @@ router.post('/v1/server/minecraft/:id', async request => {
 	return Utils.jsonResponse(message);
 });
 
+router.get('/v1/server/minecraft/:id/stats', async request => {
+	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
+
+	let message = await Minecraft.getStats(request.req.param('id'));
+	return Utils.jsonResponse(message);
+});
+
 router.get('/v1/server/minecraft/:id/banner', async request => {
 	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
 
