@@ -61,7 +61,7 @@ export default class Minecraft{
 		const dataset = "rabbit-server-list-minecraft";
 		const endpoint = "https://api.cloudflare.com/client/v4/accounts/" + Utils.env.ACCOUNT_ID + "/analytics_engine/sql";
 
-		const query_players = `SELECT toStartOfInterval(timestamp, INTERVAL '1' HOUR) AS hour, SUM(double1) as players FROM '${dataset}' WHERE index1 = '${id}' GROUP BY hour`;
+		const query_players = `SELECT toStartOfInterval(timestamp, INTERVAL '1' HOUR) AS hour, AVG(double1) as players FROM '${dataset}' WHERE index1 = '${id}' GROUP BY hour`;
 		const query_uptime = `SELECT toStartOfInterval(timestamp, INTERVAL '1' HOUR) AS hour, ((SUM(double2) / COUNT()) * 100) as uptime FROM '${dataset}' WHERE index1 = '${id}' GROUP BY hour`;
 
 		let options = {
