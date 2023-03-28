@@ -87,6 +87,18 @@ export default class Minecraft{
 			let uptimeJson = await uptimeResponse.json();
 			response.data.uptime = uptimeJson.data;
 
+			let uptimeAverage = 0;
+			response.data.uptime.forEach(value => {
+				uptimeAverage += value.uptime;
+			});
+			uptimeAverage /= response.data.uptime.length;
+			uptimeAverage = Math.round((uptimeAverage + Number.EPSILON) * 100) / 100;
+
+			try{
+				await Utils.env.DB.prepare("UPDATE minecraft SET uptime = ? WHERE id = ?")
+				.bind(uptimeAverage, id).run();
+			}catch{}
+
 			await Utils.setValue('server-minecraft-stats-' + id, JSON.stringify(response.data), 3600);
 			return response;
 		}catch{
