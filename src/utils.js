@@ -3,12 +3,14 @@ import { v4 as uuidv4 } from 'uuid';
 export default class Utils{
 	static env;
 	static date;
+	static IP;
 	static hashedIP;
 	static cache = caches.default;
 
 	static async initialize(env, ip){
 		this.env = env;
 		this.date = new Date().toISOString();
+		this.IP = ip;
 		this.hashedIP = await this.generateHash('rabbitcompany-' + ip + this.date.split('T')[0], 'SHA-256');
 	}
 

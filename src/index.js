@@ -30,7 +30,7 @@ router.post('/v1/account', async request => {
 		return Utils.jsonResponse(Errors.getJson(1000));
 	}
 
-	let message = await Account.create(auth.user, data['email'], auth.pass);
+	let message = await Account.create(auth.user, data['email'], auth.pass, data['turnstile']);
 	return Utils.jsonResponse(message);
 }).get(async request => {
 	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));

@@ -36,6 +36,7 @@ export default class Errors{
 		1031: 'Bedrock Port is invalid.',
 		1032: 'Server is already on the website.',
 		1033: 'Server Secret Token is invalid.',
+		1034: 'Captcha is invalid.',
 		9999: 'Your do not have permission to perform this action.'
 	};
 

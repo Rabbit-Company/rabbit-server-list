@@ -24,6 +24,11 @@ export default class Validate{
 		return token.length === 128;
 	}
 
+	static captcha(captcha){
+		if(typeof(captcha) !== 'string') return false;
+		return /^([a-zA-Z0-9._\-]{200,800})$/.test(captcha);
+	}
+
 	static isPositiveInteger = string => {
 		const number = Number(string);
 		const isInteger = Number.isInteger(number);
