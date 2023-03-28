@@ -15,7 +15,7 @@ export default class Minecraft{
 		if(data !== null) return { 'error': 0, 'info': 'success', 'data': JSON.parse(data) };
 
 		try{
-			const { results } = await Utils.env.DB.prepare("SELECT id, owner, name, ip, port, bedrock_ip, bedrock_port, website, discord, twitter, store, trailer, version, categories, country, description, players, players_max, online, votes, votes_total, created, updated FROM minecraft ORDER BY votes LIMIT " + limit + " OFFSET " + offset).all();
+			const { results } = await Utils.env.DB.prepare("SELECT id, owner, name, ip, port, bedrock_ip, bedrock_port, website, discord, twitter, store, trailer, version, categories, country, description, players, players_max, online, uptime, votes, votes_total, created, updated FROM minecraft ORDER BY votes LIMIT " + limit + " OFFSET " + offset).all();
 			await Utils.setValue('servers-minecraft-list-' + page, JSON.stringify(results), 60);
 			return { 'error': 0, 'info': 'success', 'data': results };
 		}catch{
@@ -30,7 +30,7 @@ export default class Minecraft{
 		if(!(await Utils.authenticate(username, token))) return Errors.getJson(1008);
 
 		try{
-			const { results } = await Utils.env.DB.prepare("SELECT id, owner, name, ip, port, bedrock_ip, bedrock_port, website, discord, twitter, store, trailer, version, categories, country, description, players, players_max, online, votes, votes_total, votifierIP, votifierPort, votifierToken, secretToken, created, updated FROM minecraft WHERE owner = ?").bind(username).all();
+			const { results } = await Utils.env.DB.prepare("SELECT id, owner, name, ip, port, bedrock_ip, bedrock_port, website, discord, twitter, store, trailer, version, categories, country, description, players, players_max, online, uptime, votes, votes_total, votifierIP, votifierPort, votifierToken, secretToken, created, updated FROM minecraft WHERE owner = ?").bind(username).all();
 			return { 'error': 0, 'info': 'success', 'data': results };
 		}catch{
 			return Errors.getJson(1009);
@@ -44,7 +44,7 @@ export default class Minecraft{
 		if(data !== null) return { 'error': 0, 'info': 'success', 'data': JSON.parse(data) };
 
 		try{
-			const result = await Utils.env.DB.prepare("SELECT id, owner, name, ip, port, bedrock_ip, bedrock_port, website, discord, twitter, store, trailer, version, categories, country, description, players, players_max, online, votes, votes_total, created, updated FROM minecraft WHERE id = ?").bind(id).first();
+			const result = await Utils.env.DB.prepare("SELECT id, owner, name, ip, port, bedrock_ip, bedrock_port, website, discord, twitter, store, trailer, version, categories, country, description, players, players_max, online, uptime, votes, votes_total, created, updated FROM minecraft WHERE id = ?").bind(id).first();
 			await Utils.setValue('server-minecraft-' + id, JSON.stringify(result), 60);
 			return { 'error': 0, 'info': 'success', 'data': result };
 		}catch{
