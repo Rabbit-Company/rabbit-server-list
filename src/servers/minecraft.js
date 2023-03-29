@@ -121,6 +121,18 @@ export default class Minecraft{
 		const outcome = await result.json();
 		if(!outcome.success) return Errors.getJson(1034);
 
+		let doID = Utils.env.MVDO.idFromName(id);
+
+		let request = new Request('https://api.rabbitserverlist.com/votes/get', {
+			method: 'POST',
+			body: JSON.stringify({ 'username': username, 'ip': Utils.IP }),
+			headers: { 'Content-Type': 'application/json' },
+		})
+		let response = await Utils.env.MVDO.get(doID).fetch(request);
+		let json = await response.json();
+		return json;
+		return { 'error': 0, 'info': 'success' };
+
 		let votifierIP = null;
 		let votifierPort = null;
 		let votifierToken = null;

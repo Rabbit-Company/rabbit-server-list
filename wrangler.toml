@@ -19,6 +19,14 @@ bucket_name = 'rabbitserverlist'
 binding = "MAE"
 dataset = "rabbit-server-list-minecraft"
 
+[[durable_objects.bindings]]
+name = "MVDO"
+class_name = "MinecraftVoteDO"
+
+[[migrations]]
+tag = "v1"
+new_classes = ["MinecraftVoteDO"]
+
 [vars]
 ACCOUNT_ID = "eb996327383b1ba7869926dcb856b4ae"
 
