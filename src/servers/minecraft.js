@@ -121,9 +121,9 @@ export default class Minecraft{
 		const outcome = await result.json();
 		if(!outcome.success) return Errors.getJson(1034);
 
-		let limitedIP = await Utils.getValue('server-minecraft-' + id + '-vote-limit-ip-' + Utils.IP);
+		let limitedIP = await Utils.getValue('server-minecraft-' + id + '-vote-limit-ip-' + Utils.IP, 1800);
 		if(limitedIP === null) return JSON.parse(limitedIP);
-		let limitedUsername = await Utils.getValue('server-minecraft-' + id + '-vote-limit-username-' + username);
+		let limitedUsername = await Utils.getValue('server-minecraft-' + id + '-vote-limit-username-' + username, 1800);
 		if(limitedUsername === null) return JSON.parse(limitedUsername);
 
 		let doID = Utils.env.MVDO.idFromName(id);
