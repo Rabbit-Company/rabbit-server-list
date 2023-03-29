@@ -15,7 +15,6 @@ export class MinecraftVoteDO{
 	}
 
 	async alarm(){
-
 		let votes = await this.state.storage.get('votes');
 		if(votes !== null){
 			let monthlyVotes = votes['monthly'];
