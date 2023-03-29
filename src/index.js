@@ -164,11 +164,6 @@ router.post('/v1/server/minecraft/:id/vote', async request => {
 
 	let message = await Minecraft.vote(request.req.param('id'), data['username'], data['turnstile']);
 	return Utils.jsonResponse(message);
-}).get(async request => {
-	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
-
-	let message = await Minecraft.getVotes(request.req.param('id'));
-	return Utils.jsonResponse(message);
 });
 
 router.get('/v1/server/minecraft/:id/banner', async request => {

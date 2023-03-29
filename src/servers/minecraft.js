@@ -140,6 +140,12 @@ export default class Minecraft{
 			return json;
 		}
 
+		try{
+			await Utils.env.DB.prepare("UPDATE minecraft SET votes = votes + 1, votes_total = votes_total + 1 WHERE id = ?").bind(id).run();
+		}catch{
+			return Errors.getJson(1009);
+		}
+
 		let votifierIP = null;
 		let votifierPort = null;
 		let votifierToken = null;
@@ -158,9 +164,7 @@ export default class Minecraft{
 				votifierIP = results.votifierIP;
 				votifierPort = results.votifierPort;
 				votifierToken = results.votifierToken;
-			}catch{
-				return Errors.getJson(1009);
-			}
+			}catch{}
 		}
 
 		if(votifierIP && votifierPort && votifierToken){
