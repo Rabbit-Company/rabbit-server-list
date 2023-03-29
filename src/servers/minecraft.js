@@ -158,17 +158,26 @@ export default class Minecraft{
 			votifierToken = data.votifierToken;
 		}else{
 			try{
-				const { results } = await Utils.env.DB.prepare("SELECT votifierIP, votifierPort, votifierToken FROM minecraft WHERE id = ?").bind(id).all();
-				await Utils.setValue('server-minecraft-' + id + '-votifier', JSON.stringify(results), 3600);
+				const result = await Utils.env.DB.prepare("SELECT votifierIP, votifierPort, votifierToken FROM minecraft WHERE id = ?").bind(id).first();
+				await Utils.setValue('server-minecraft-' + id + '-votifier', JSON.stringify(result), 3600);
 
-				votifierIP = results.votifierIP;
-				votifierPort = results.votifierPort;
-				votifierToken = results.votifierToken;
+				votifierIP = result.votifierIP;
+				votifierPort = result.votifierPort;
+				votifierToken = result.votifierToken;
 			}catch{}
 		}
 
 		if(votifierIP && votifierPort && votifierToken){
-			// Send Minecraft vote
+			await fetch('https://crawler.rabbitserverlist.com/v1/servers/minecraft/vote', {
+				method: 'POST',
+				body: JSON.stringify({
+					'authToken': Utils.env.CRAWLER_SECRET_TOKEN,
+					'ip': votifierIP,
+					'port': votifierPort,
+					'token': votifierToken,
+					'username': username
+				})
+			});
 		}
 
 		return { 'error': 0, 'info': 'success' };
