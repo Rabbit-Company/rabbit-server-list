@@ -249,15 +249,15 @@ export class MinecraftVoteDO{
 		// Get number of votes
 		if(url.pathname === '/votes/get'){
 			let votes = await this.state.storage.get('votes');
-			if(votes == null) return MinecraftVoteDO.jsonResponse({ 'error': 0, 'info': 'success2', 'data': { 'monthly': 0, 'total': 0 } });
-			return MinecraftVoteDO.jsonResponse({ 'error': 0, 'info': 'success3', 'data': votes });
+			if(votes == null) return MinecraftVoteDO.jsonResponse({ 'error': 0, 'info': 'success', 'data': { 'monthly': 0, 'total': 0 } });
+			return MinecraftVoteDO.jsonResponse({ 'error': 0, 'info': 'success', 'data': votes });
 		}
 
 		// Get history of votes
 		if(url.pathname === '/votes/history/get'){
 			let historyVotes = await this.state.storage.get('votes-history');
-			if(historyVotes == null) return MinecraftVoteDO.jsonResponse({ 'error': 0, 'info': 'success4', 'data': {} });
-			return MinecraftVoteDO.jsonResponse({ 'error': 0, 'info': 'success5', 'data': historyVotes });
+			if(historyVotes == null) return MinecraftVoteDO.jsonResponse({ 'error': 0, 'info': 'success', 'data': {} });
+			return MinecraftVoteDO.jsonResponse({ 'error': 0, 'info': 'success', 'data': historyVotes });
 		}
 
 		// Vote
