@@ -84,6 +84,7 @@ export class MinecraftVoteDO{
 			votes['total']++;
 			await this.state.storage.put('votes', votes);
 
+			return MinecraftVoteDO.jsonResponse({ 'error': 0, 'info': 'success' });
 		}
 
 		return MinecraftVoteDO.jsonResponse({ "error": 404, "info": "Invalid API endpoint" }, 404);
