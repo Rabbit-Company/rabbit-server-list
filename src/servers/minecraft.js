@@ -121,21 +121,20 @@ export default class Minecraft{
 		const outcome = await result.json();
 		if(!outcome.success) return Errors.getJson(1034);
 
-		await Utils.getValue('server-minecraft-' + id + '-voted');
-
 		let votifierIP = null;
 		let votifierPort = null;
 		let votifierToken = null;
 
-		let data = await Utils.getValue('server-minecraft-' + id + '-vote');
+		let data = await Utils.getValue('server-minecraft-' + id + '-votifier');
 		if(data !== null){
+			data = JSON.parse(data);
 			votifierIP = data.votifierIP;
 			votifierPort = data.votifierPort;
 			votifierToken = data.votifierToken;
 		}else{
 			try{
 				const { results } = await Utils.env.DB.prepare("SELECT votifierIP, votifierPort, votifierToken FROM minecraft WHERE id = ?").bind(id).all();
-				await Utils.setValue('server-minecraft-' + id + '-vote', JSON.stringify(results), 3600);
+				await Utils.setValue('server-minecraft-' + id + '-votifier', JSON.stringify(results), 3600);
 
 				votifierIP = results.votifierIP;
 				votifierPort = results.votifierPort;
@@ -143,14 +142,6 @@ export default class Minecraft{
 			}catch{
 				return Errors.getJson(1009);
 			}
-		}
-
-		await Utils.setValue('server-minecraft-' + id + '-voted', )
-
-		try{
-			await Utils.env.DB.prepare("UPDATE minecraft SET votes = votes + 1, votes_total = votes_total + 1 WHERE id = ?").bind(id).run();
-		}catch {
-			return Errors.getJson(1009);
 		}
 
 		if(votifierIP && votifierPort && votifierToken){
