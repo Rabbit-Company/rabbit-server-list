@@ -121,8 +121,12 @@ export default class Minecraft{
 		const outcome = await result.json();
 		if(!outcome.success) return Errors.getJson(1034);
 
-		let doID = Utils.env.MVDO.idFromName(id);
+		let limitedIP = await Utils.getValue('server-minecraft-' + id + '-vote-limit-ip-' + Utils.IP);
+		if(limitedIP === null) return JSON.parse(limitedIP);
+		let limitedUsername = await Utils.getValue('server-minecraft-' + id + '-vote-limit-username-' + username);
+		if(limitedUsername === null) return JSON.parse(limitedUsername);
 
+		let doID = Utils.env.MVDO.idFromName(id);
 		let request = new Request('https://api.rabbitserverlist.com/vote', {
 			method: 'POST',
 			body: JSON.stringify({ 'username': username, 'ip': Utils.IP }),
@@ -130,7 +134,11 @@ export default class Minecraft{
 		})
 		let response = await Utils.env.MVDO.get(doID).fetch(request);
 		let json = await response.json();
-		return json;
+		if(json.error !== 0){
+			if(json.error === 3001) await Utils.setValue('server-minecraft-' + id + '-vote-limit-ip-' + Utils.IP, JSON.stringify(json), 3600);
+			if(json.error === 3002) await Utils.setValue('server-minecraft-' + id + '-vote-limit-username-' + username, JSON.stringify(json), 3600);
+			return json;
+		}
 
 		let votifierIP = null;
 		let votifierPort = null;
@@ -159,7 +167,7 @@ export default class Minecraft{
 			// Send Minecraft vote
 		}
 
-		return {'error': 0, 'info': 'success', 'votifierIP': votifierIP, 'votifierPort': votifierPort, 'votifierToken': votifierToken };
+		return { 'error': 0, 'info': 'success' };
 	}
 
 	static async add(username, token, data){

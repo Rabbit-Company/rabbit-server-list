@@ -269,14 +269,14 @@ export class MinecraftVoteDO{
 			let ipVoteDate = await this.state.storage.get('votedate-ip-' + data['ip']);
 			if(ipVoteDate != null){
 				if((Date.now() - MinecraftVoteDO.voteLimit) < Number(ipVoteDate)){
-					return MinecraftVoteDO.jsonResponse({ 'error': 3000, 'info': 'You have already voted today.' });
+					return MinecraftVoteDO.jsonResponse({ 'error': 3001, 'info': 'You have already voted today.' });
 				}
 			}
 
 			let usernameVoteDate = await this.state.storage.get('votedate-username-' + data['username']);
 			if(usernameVoteDate != null){
 				if((Date.now() - MinecraftVoteDO.voteLimit) < Number(usernameVoteDate)){
-					return MinecraftVoteDO.jsonResponse({ 'error': 3000, 'info': 'You have already voted today.' });
+					return MinecraftVoteDO.jsonResponse({ 'error': 3002, 'info': 'You have already voted today.' });
 				}
 			}
 
