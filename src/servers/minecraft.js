@@ -170,6 +170,22 @@ export default class Minecraft{
 		return { 'error': 0, 'info': 'success' };
 	}
 
+	static async getVotes(id){
+		if(!Validate.isPositiveInteger(id)) return Errors.getJson(1022);
+
+		let votes = await Utils.getValue('server-minecraft-' + id + '-votes');
+		if(votes !== null) return JSON.parse(votes);
+
+		let doID = Utils.env.MVDO.idFromName(id);
+		let request = new Request('https://api.rabbitserverlist.com/votes/get');
+		let response = await Utils.env.MVDO.get(doID).fetch(request);
+		let json = await response.json();
+
+		await Utils.setValue('server-minecraft-' + id + '-votes', JSON.stringify(json));
+
+		return json;
+	}
+
 	static async add(username, token, data){
 		if(!Validate.username(username)) return Errors.getJson(1001);
 		if(!Validate.token(token)) return Errors.getJson(1004);
