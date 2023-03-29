@@ -249,15 +249,15 @@ export class MinecraftVoteDO{
 		// Get number of votes
 		if(url.pathname === '/votes/get'){
 			let votes = await this.state.storage.get('votes');
-			if(votes === null) return MinecraftVoteDO.jsonResponse({ 'error': 0, 'info': 'success', 'data': { 'monthly': 0, 'total': 0 } });
-			return MinecraftVoteDO.jsonResponse({ 'error': 0, 'info': 'success', 'data': votes });
+			if(votes == null) return MinecraftVoteDO.jsonResponse({ 'error': 0, 'info': 'success2', 'data': { 'monthly': 0, 'total': 0 } });
+			return MinecraftVoteDO.jsonResponse({ 'error': 0, 'info': 'success3', 'data': votes });
 		}
 
 		// Get history of votes
 		if(url.pathname === '/votes/history/get'){
 			let historyVotes = await this.state.storage.get('votes-history');
-			if(historyVotes === null) return MinecraftVoteDO.jsonResponse({ 'error': 0, 'info': 'success', 'data': {} });
-			return MinecraftVoteDO.jsonResponse({ 'error': 0, 'info': 'success', 'data': historyVotes });
+			if(historyVotes == null) return MinecraftVoteDO.jsonResponse({ 'error': 0, 'info': 'success4', 'data': {} });
+			return MinecraftVoteDO.jsonResponse({ 'error': 0, 'info': 'success5', 'data': historyVotes });
 		}
 
 		// Vote
@@ -267,15 +267,15 @@ export class MinecraftVoteDO{
 			if(!data['username'] || !data['ip']) return MinecraftVoteDO.jsonResponse({ 'error': 1000, 'info': 'Not all required data provided in json format.' });
 
 			let ipVoteDate = await this.state.storage.get('votedate-ip-' + data['ip']);
-			if(ipVoteDate !== null){
-				if((Date.now() - voteLimit) > Number(ipVoteDate)){
+			if(ipVoteDate != null){
+				if((Date.now() - MinecraftVoteDO.voteLimit) > Number(ipVoteDate)){
 					return MinecraftVoteDO.jsonResponse({ 'error': 3000, 'info': 'You have already voted today.' });
 				}
 			}
 
 			let usernameVoteDate = await this.state.storage.get('votedate-username-' + data['username']);
-			if(usernameVoteDate !== null){
-				if((Date.now() - voteLimit) > Number(usernameVoteDate)){
+			if(usernameVoteDate != null){
+				if((Date.now() - MinecraftVoteDO.voteLimit) > Number(usernameVoteDate)){
 					return MinecraftVoteDO.jsonResponse({ 'error': 3000, 'info': 'You have already voted today.' });
 				}
 			}
@@ -284,7 +284,7 @@ export class MinecraftVoteDO{
 			await this.state.storage.put('votedate-username-' + data['username'], Date.now());
 
 			let votes = await this.state.storage.get('votes');
-			if(votes === null) votes = { 'monthly': 0, 'total': 0 };
+			if(votes == null) votes = { 'monthly': 0, 'total': 0 };
 			votes['monthly']++;
 			votes['total']++;
 			await this.state.storage.put('votes', votes);

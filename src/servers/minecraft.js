@@ -123,7 +123,7 @@ export default class Minecraft{
 
 		let doID = Utils.env.MVDO.idFromName(id);
 
-		let request = new Request('https://api.rabbitserverlist.com/votes/get', {
+		let request = new Request('https://api.rabbitserverlist.com/vote', {
 			method: 'POST',
 			body: JSON.stringify({ 'username': username, 'ip': Utils.IP }),
 			headers: { 'Content-Type': 'application/json' },
@@ -131,7 +131,6 @@ export default class Minecraft{
 		let response = await Utils.env.MVDO.get(doID).fetch(request);
 		let json = await response.json();
 		return json;
-		return { 'error': 0, 'info': 'success' };
 
 		let votifierIP = null;
 		let votifierPort = null;
