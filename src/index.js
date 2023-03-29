@@ -149,6 +149,20 @@ router.get('/v1/server/minecraft/:id/stats', async request => {
 	return Utils.jsonResponse(message);
 });
 
+router.post('/v1/server/minecraft/:id/vote', async request => {
+	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
+
+	let data = {};
+	try{
+		data = await request.req.json();
+	}catch{
+		return Utils.jsonResponse(Errors.getJson(1000));
+	}
+
+	let message = await Minecraft.vote(request.req.param('id'), data['username'], data['turnstile']);
+	return Utils.jsonResponse(message);
+});
+
 router.get('/v1/server/minecraft/:id/banner', async request => {
 	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
 

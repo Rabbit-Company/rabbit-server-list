@@ -107,6 +107,59 @@ export default class Minecraft{
 
 	}
 
+	static async vote(id, username, turnstile){
+		if(!Validate.isPositiveInteger(id)) return Errors.getJson(1022);
+		if(!Validate.captcha(turnstile)) return Errors.getJson(1034);
+
+		let formData = new FormData();
+		formData.append('secret', Utils.env.CF_TURNSTILE_TOKEN);
+		formData.append('response', turnstile);
+		formData.append('remoteip', Utils.IP);
+
+		const url = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
+		const result = await fetch(url, { body: formData, method: 'POST' });
+		const outcome = await result.json();
+		if(!outcome.success) return Errors.getJson(1034);
+
+		await Utils.getValue('server-minecraft-' + id + '-voted');
+
+		let votifierIP = null;
+		let votifierPort = null;
+		let votifierToken = null;
+
+		let data = await Utils.getValue('server-minecraft-' + id + '-vote');
+		if(data !== null){
+			votifierIP = data.votifierIP;
+			votifierPort = data.votifierPort;
+			votifierToken = data.votifierToken;
+		}else{
+			try{
+				const { results } = await Utils.env.DB.prepare("SELECT votifierIP, votifierPort, votifierToken FROM minecraft WHERE id = ?").bind(id).all();
+				await Utils.setValue('server-minecraft-' + id + '-vote', JSON.stringify(results), 3600);
+
+				votifierIP = results.votifierIP;
+				votifierPort = results.votifierPort;
+				votifierToken = results.votifierToken;
+			}catch{
+				return Errors.getJson(1009);
+			}
+		}
+
+		await Utils.setValue('server-minecraft-' + id + '-voted', )
+
+		try{
+			await Utils.env.DB.prepare("UPDATE minecraft SET votes = votes + 1, votes_total = votes_total + 1 WHERE id = ?").bind(id).run();
+		}catch {
+			return Errors.getJson(1009);
+		}
+
+		if(votifierIP && votifierPort && votifierToken){
+			// Send Minecraft vote
+		}
+
+		return {'error': 0, 'info': 'success', 'votifierIP': votifierIP, 'votifierPort': votifierPort, 'votifierToken': votifierToken };
+	}
+
 	static async add(username, token, data){
 		if(!Validate.username(username)) return Errors.getJson(1001);
 		if(!Validate.token(token)) return Errors.getJson(1004);
