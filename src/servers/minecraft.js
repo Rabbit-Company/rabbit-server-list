@@ -155,9 +155,9 @@ export default class Minecraft{
 		const outcome = await result.json();
 		if(!outcome.success) return Errors.getJson(1034);
 
-		let limitedIP = await Utils.getValue('server-minecraft-' + id + '-vote-limit-ip-' + Utils.IP, 1800);
+		let limitedIP = await Utils.getValue('server-minecraft-' + id + '-vote-limit-ip-' + Utils.IP);
 		if(limitedIP !== null) return JSON.parse(limitedIP);
-		let limitedUsername = await Utils.getValue('server-minecraft-' + id + '-vote-limit-username-' + username, 1800);
+		let limitedUsername = await Utils.getValue('server-minecraft-' + id + '-vote-limit-username-' + username);
 		if(limitedUsername !== null) return JSON.parse(limitedUsername);
 
 		let doID = Utils.env.MVDO.idFromName(id);
@@ -169,8 +169,8 @@ export default class Minecraft{
 		let response = await Utils.env.MVDO.get(doID).fetch(request);
 		let json = await response.json();
 		if(json.error !== 0){
-			if(json.error === 3001) await Utils.setValue('server-minecraft-' + id + '-vote-limit-ip-' + Utils.IP, JSON.stringify(json), 3600);
-			if(json.error === 3002) await Utils.setValue('server-minecraft-' + id + '-vote-limit-username-' + username, JSON.stringify(json), 3600);
+			if(json.error === 3001) await Utils.setValue('server-minecraft-' + id + '-vote-limit-ip-' + Utils.IP, JSON.stringify(json), 600);
+			if(json.error === 3002) await Utils.setValue('server-minecraft-' + id + '-vote-limit-username-' + username, JSON.stringify(json), 600);
 			return json;
 		}
 

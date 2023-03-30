@@ -14,6 +14,19 @@ export class MinecraftVoteDO{
 		});
 	}
 
+	static durationBetween(date, date2){
+		const diffTime = Math.abs(date2 - date);
+		const diffSeconds = Math.ceil(diffTime / (1000));
+		const diffMinutes = Math.ceil(diffTime / (1000 * 60));
+		const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
+		const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+		if(diffSeconds < 60) return diffSeconds + ' second(s)';
+		if(diffMinutes < 60) return diffMinutes + ' minute(s)';
+		if(diffHours < 24) return diffHours + ' hour(s)';
+		return diffDays + ' day(s)';
+	}
+
 	async alarm(){
 		/*
 		let votes = await this.state.storage.get('votes');
@@ -70,14 +83,14 @@ export class MinecraftVoteDO{
 			let ipVoteDate = await this.state.storage.get('votedate-ip-' + data['ip']);
 			if(ipVoteDate != null){
 				if((Date.now() - MinecraftVoteDO.voteLimit) < Number(ipVoteDate)){
-					return MinecraftVoteDO.jsonResponse({ 'error': 3001, 'info': 'You have already voted today.' });
+					return MinecraftVoteDO.jsonResponse({ 'error': 3001, 'info': 'You have already voted today. You can vote for this server again in: ' + MinecraftVoteDO.durationBetween(Number(ipVoteDate) + MinecraftVoteDO.voteLimit, Date.now()) });
 				}
 			}
 
 			let usernameVoteDate = await this.state.storage.get('votedate-username-' + data['username']);
 			if(usernameVoteDate != null){
 				if((Date.now() - MinecraftVoteDO.voteLimit) < Number(usernameVoteDate)){
-					return MinecraftVoteDO.jsonResponse({ 'error': 3002, 'info': 'You have already voted today.' });
+					return MinecraftVoteDO.jsonResponse({ 'error': 3002, 'info': 'You have already voted today. You can vote for this server again in: ' + MinecraftVoteDO.durationBetween(Number(usernameVoteDate) + MinecraftVoteDO.voteLimit, Date.now()) });
 				}
 			}
 
