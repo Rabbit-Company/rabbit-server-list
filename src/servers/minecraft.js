@@ -233,6 +233,12 @@ export default class Minecraft{
 		return json;
 	}
 
+	static async resetVotes(env){
+		try{
+			await env.DB.prepare("UPDATE minecraft SET votes = 0").run();
+		}catch{}
+	}
+
 	static async add(username, token, data){
 		if(!Validate.username(username)) return Errors.getJson(1001);
 		if(!Validate.token(token)) return Errors.getJson(1004);

@@ -27,6 +27,9 @@ class_name = "MinecraftVoteDO"
 tag = "v1"
 new_classes = ["MinecraftVoteDO"]
 
+[triggers]
+crons = ["0 0 1 * *"]
+
 [vars]
 ACCOUNT_ID = "eb996327383b1ba7869926dcb856b4ae"
 

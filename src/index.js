@@ -210,6 +210,6 @@ router.all("*", () => {
 export default {
 	fetch: router.fetch,
 	async scheduled(event, env, ctx) {
-
+		await Minecraft.resetVotes(env);
 	}
 };
