@@ -220,7 +220,7 @@ export default class Minecraft{
 	static async getVotes(id){
 		if(!Validate.isPositiveInteger(id)) return Errors.getJson(1022);
 
-		let votes = await Utils.getValue('server-minecraft-' + id + '-votes');
+		let votes = await Utils.getValue('server-minecraft-' + id + '-votes', 600);
 		if(votes !== null) return JSON.parse(votes);
 
 		let doID = Utils.env.MVDO.idFromName(id);
@@ -228,7 +228,7 @@ export default class Minecraft{
 		let response = await Utils.env.MVDO.get(doID).fetch(request);
 		let json = await response.json();
 
-		await Utils.setValue('server-minecraft-' + id + '-votes', JSON.stringify(json));
+		await Utils.setValue('server-minecraft-' + id + '-votes', JSON.stringify(json), 3600);
 
 		return json;
 	}

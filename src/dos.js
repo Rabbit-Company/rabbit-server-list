@@ -43,18 +43,22 @@ export class MinecraftVoteDO{
 			await this.state.storage.put('votes', votes);
 		}
 		*/
+		await this.state.storage.deleteAll();
 	}
 
 	async fetch(request) {
 		let url = new URL(request.url);
 
-		/*
 		let currentAlarm = await this.state.storage.getAlarm();
 		if(currentAlarm == null){
 			let nextMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1).getTime() + 7_200_000;
       this.state.storage.setAlarm(nextMonth);
     }
-		*/
+
+		if(url.pathname === '/votes/get'){
+			let vals = await this.state.storage.list({ prefix: 'votes-' });
+			return MinecraftVoteDO.jsonResponse({'error': 0, 'info': 'success', 'data': vals});
+		}
 
 		// Get number of votes
 		/*
@@ -96,6 +100,13 @@ export class MinecraftVoteDO{
 
 			await this.state.storage.put('votedate-ip-' + data['ip'], Date.now());
 			await this.state.storage.put('votedate-username-' + data['username'], Date.now());
+
+			let votes = await this.state.storage.get('votes-' + data['username']);
+			if(votes == null){
+				await this.state.storage.put('votes-' + data['username'], 1);
+			}else{
+				await this.state.storage.put('votes-' + data['username'], votes++);
+			}
 
 			/*
 			let votes = await this.state.storage.get('votes');
