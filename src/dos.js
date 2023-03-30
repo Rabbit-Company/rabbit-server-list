@@ -56,8 +56,14 @@ export class MinecraftVoteDO{
     }
 
 		if(url.pathname === '/votes/get'){
-			let vals = await this.state.storage.list({ prefix: 'votes-' });
-			return MinecraftVoteDO.jsonResponse({'error': 0, 'info': 'success', 'data': vals});
+			let map = await this.state.storage.list({ prefix: 'votes-', limit: 100 });
+
+			const data = {};
+			map.forEach((value, key) => {
+				data[key.replace('votes-', '')] = value;
+			});
+
+			return MinecraftVoteDO.jsonResponse({ 'error': 0, 'info': 'success', 'data': data });
 		}
 
 		// Get number of votes
