@@ -83,14 +83,14 @@ export class MinecraftVoteDO{
 			let ipVoteDate = await this.state.storage.get('votedate-ip-' + data['ip']);
 			if(ipVoteDate != null){
 				if((Date.now() - MinecraftVoteDO.voteLimit) < Number(ipVoteDate)){
-					return MinecraftVoteDO.jsonResponse({ 'error': 3001, 'info': 'You have already voted today. You can vote for this server again in: ' + MinecraftVoteDO.durationBetween(Number(ipVoteDate) + MinecraftVoteDO.voteLimit, Date.now()) });
+					return MinecraftVoteDO.jsonResponse({ 'error': 3001, 'info': 'You have already voted for this server today.\nYou will be able to vote again in approximately ' + MinecraftVoteDO.durationBetween(Number(ipVoteDate) + MinecraftVoteDO.voteLimit, Date.now()) });
 				}
 			}
 
 			let usernameVoteDate = await this.state.storage.get('votedate-username-' + data['username']);
 			if(usernameVoteDate != null){
 				if((Date.now() - MinecraftVoteDO.voteLimit) < Number(usernameVoteDate)){
-					return MinecraftVoteDO.jsonResponse({ 'error': 3002, 'info': 'You have already voted today. You can vote for this server again in: ' + MinecraftVoteDO.durationBetween(Number(usernameVoteDate) + MinecraftVoteDO.voteLimit, Date.now()) });
+					return MinecraftVoteDO.jsonResponse({ 'error': 3002, 'info': 'You have already voted for this server today.\nYou will be able to vote again in approximately ' + MinecraftVoteDO.durationBetween(Number(usernameVoteDate) + MinecraftVoteDO.voteLimit, Date.now()) });
 				}
 			}
 
