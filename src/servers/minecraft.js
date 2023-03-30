@@ -371,6 +371,7 @@ export default class Minecraft{
 
 		let headers = new Headers();
 		headers.set('Content-Type', 'image/gif');
+		headers.set('Cache-Control', 'max-age=600');
 
 		let banner = await Utils.getCacheR2('minecraft-banner-' + id);
 		if(banner !== null) return new Response(banner, { headers });
