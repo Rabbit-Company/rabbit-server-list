@@ -23,6 +23,40 @@ export default class Minecraft{
 		}
 	}
 
+	static async listFilter(page, filter, value){
+		if(!Validate.isPositiveInteger(page)) page = 1;
+		if(!Validate.minecraftServerFilter(filter)) return Errors.getJson(1035);
+
+		if(filter === 'version'){
+			if(!Validate.minecraftServerVersion(value)) return Errors.getJson(1035);
+		}else if(filter === 'category'){
+			if(!Validate.minecraftServerCategoryList.includes(value)) return Errors.getJson(1035);
+		}
+
+		if(page > 100) page = 100;
+
+		let limit = 20;
+		let offset = limit * (page - 1);
+
+		let data = await Utils.getValue('servers-minecraft-list-' + page + '-filter-' + filter + '-' + value);
+		if(data !== null) return { 'error': 0, 'info': 'success', 'data': JSON.parse(data) };
+
+		let sql;
+		if(filter === 'version'){
+			sql = Utils.env.DB.prepare("SELECT id, owner, name, ip, port, bedrock_ip, bedrock_port, website, discord, twitter, store, trailer, version, categories, country, description, players, players_max, online, uptime, votes, votes_total, created, updated FROM minecraft WHERE version = ? ORDER BY votes LIMIT " + limit + " OFFSET " + offset).bind(value);
+		}else if(filter === 'category'){
+			sql = Utils.env.DB.prepare("SELECT id, owner, name, ip, port, bedrock_ip, bedrock_port, website, discord, twitter, store, trailer, version, categories, country, description, players, players_max, online, uptime, votes, votes_total, created, updated FROM minecraft WHERE categories LIKE '%" + value + "%' ORDER BY votes LIMIT " + limit + " OFFSET " + offset);
+		}
+
+		try{
+			const { results } = await sql.all();
+			await Utils.setValue('servers-minecraft-list-' + page + '-filter-' + filter + '-' + value, JSON.stringify(results), 60);
+			return { 'error': 0, 'info': 'success', 'data': results };
+		}catch{
+			return Errors.getJson(1009);
+		}
+	}
+
 	static async listOwner(username, token){
 		if(!Validate.username(username)) return Errors.getJson(1001);
 		if(!Validate.token(token)) return Errors.getJson(1004);

@@ -115,6 +115,13 @@ router.get('/v1/servers/minecraft/page/:page', async request => {
 	return Utils.jsonResponse(message);
 });
 
+router.get('/v1/servers/minecraft/page/:page/filter/:filter/:value', async request => {
+	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
+
+	let message = await Minecraft.listFilter(request.req.param('page'), request.req.param('filter'), request.req.param('value'));
+	return Utils.jsonResponse(message);
+});
+
 router.post('/v1/server/minecraft/:id', async request => {
 	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
 

@@ -37,6 +37,7 @@ export default class Errors{
 		1032: 'Server is already on the website.',
 		1033: 'Server Secret Token is invalid.',
 		1034: 'Captcha is invalid.',
+		1035: 'Filter does not exists.',
 		9999: 'Your do not have permission to perform this action.'
 	};
 
