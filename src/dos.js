@@ -51,7 +51,7 @@ export class MinecraftVoteDO{
 
 		let currentAlarm = await this.state.storage.getAlarm();
 		if(currentAlarm == null){
-			let nextMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1).getTime() + 60_000;
+			let nextMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1).getTime();
       this.state.storage.setAlarm(nextMonth);
     }
 
