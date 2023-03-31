@@ -27,7 +27,7 @@ export default class Validate{
 
 	static captcha(captcha){
 		if(typeof(captcha) !== 'string') return false;
-		return /^([a-zA-Z0-9._\-]{200,800})$/.test(captcha);
+		return /^([a-zA-Z0-9._\-]{200,2048})$/.test(captcha);
 	}
 
 	static isPositiveInteger = string => {
