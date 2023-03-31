@@ -31,6 +31,8 @@ export default class Minecraft{
 			if(!Validate.minecraftServerVersion(value)) return Errors.getJson(1035);
 		}else if(filter === 'category'){
 			if(!Validate.minecraftServerCategoryList.includes(value)) return Errors.getJson(1035);
+		}else if(filter === 'country'){
+			if(!Validate.country(value)) return Errors.getJson(1035);
 		}
 
 		if(page > 100) page = 100;
@@ -46,6 +48,8 @@ export default class Minecraft{
 			sql = Utils.env.DB.prepare("SELECT id, owner, name, ip, port, bedrock_ip, bedrock_port, website, discord, twitter, store, trailer, version, categories, country, description, players, players_max, online, uptime, votes, votes_total, created, updated FROM minecraft WHERE version = ? ORDER BY votes LIMIT " + limit + " OFFSET " + offset).bind(value);
 		}else if(filter === 'category'){
 			sql = Utils.env.DB.prepare("SELECT id, owner, name, ip, port, bedrock_ip, bedrock_port, website, discord, twitter, store, trailer, version, categories, country, description, players, players_max, online, uptime, votes, votes_total, created, updated FROM minecraft WHERE categories LIKE '%" + value + "%' ORDER BY votes LIMIT " + limit + " OFFSET " + offset);
+		}else if(filter === 'country'){
+			sql = Utils.env.DB.prepare("SELECT id, owner, name, ip, port, bedrock_ip, bedrock_port, website, discord, twitter, store, trailer, version, categories, country, description, players, players_max, online, uptime, votes, votes_total, created, updated FROM minecraft WHERE country = ? ORDER BY votes LIMIT " + limit + " OFFSET " + offset).bind(value);
 		}
 
 		try{
