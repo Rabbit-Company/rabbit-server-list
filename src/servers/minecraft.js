@@ -373,29 +373,36 @@ export default class Minecraft{
 	static async getBanner(id){
 		if(!Validate.isPositiveInteger(id)) return Errors.getJson(1022);
 
-		let headers = new Headers();
-		headers.set('Content-Type', 'image/gif');
+		const headers = new Headers();
 		headers.set('Cache-Control', 'max-age=3600');
 
 		let banner = await Utils.getCacheR2('minecraft-banner-' + id);
-		if(banner !== null) return new Response(banner, { headers });
+		if(banner !== null){
+			headers.set('Content-Type', banner.type);
+			return new Response(banner.body, { headers });
+		}
 
 		banner = await Utils.env.R2.get('servers/minecraft/banners/' + id);
 		if(banner !== null){
+			let type = banner.httpMetadata.contentType;
+			headers.set('Content-Type', type);
 			let body = banner.body.tee();
-			await Utils.setCacheR2('minecraft-banner-' + id, body[0], 3600);
+			await Utils.setCacheR2('minecraft-banner-' + id, body[0], type, 3600);
 			return new Response(body[1], { headers });
 		}
 
-		headers.set('Content-Type', 'image/png');
-
 		banner = await Utils.getCacheR2('minecraft-banner-default');
-		if(banner !== null) return new Response(banner, { headers });
+		if(banner !== null){
+			headers.set('Content-Type', banner.type);
+			return new Response(banner.body, { headers });
+		}
 
 		banner = await Utils.env.R2.get('servers/minecraft/banners/default');
 		if(banner !== null){
+			let type = banner.httpMetadata.contentType;
+			headers.set('Content-Type', type);
 			let body = banner.body.tee();
-			await Utils.setCacheR2('minecraft-banner-default', body[0], 3600);
+			await Utils.setCacheR2('minecraft-banner-default', body[0], type, 3600);
 			return new Response(body[1], { headers });
 		}
 

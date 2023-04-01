@@ -49,17 +49,18 @@ export default class Utils{
 		return value;
 	}
 
-	static async setCacheR2(key, value, cacheTime = 60){
+	static async setCacheR2(key, value, type, cacheTime = 60){
 		let cacheKey = "https://api.rabbitserverlist.com?key=" + key;
 		let nres = new Response(value);
 		nres.headers.append('Cache-Control', 's-maxage=' + cacheTime);
+		nres.headers.set('Content-Type', type);
 		await this.cache.put(cacheKey, nres);
 	}
 
 	static async getCacheR2(key){
 		let cacheKey = "https://api.rabbitserverlist.com?key=" + key;
 		let res = await this.cache.match(cacheKey);
-		if(res) return res.body;
+		if(res) return { body: res.body, type: res.headers.get('Content-Type') };
 		return null;
 	}
 
