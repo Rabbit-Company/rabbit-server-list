@@ -75,10 +75,20 @@ export default class Utils{
 		return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
 	}
 
-	static getRandomInt(max, min = 0) {
-		min = Math.ceil(min);
-		max = Math.floor(max);
-		return Math.floor(Math.random() * (max - min)) + min;
+	static getRandomInt(max, min = 0){
+		var range = max - min;
+		var requestBytes = Math.ceil(Math.log2(range) / 8);
+		if(!requestBytes) return min;
+
+		var maxNum = Math.pow(256, requestBytes);
+		var ar = new Uint8Array(requestBytes);
+
+		while (true){
+			window.crypto.getRandomValues(ar);
+			var val = 0;
+			for(var i = 0;i < requestBytes;i++) val = (val << 8) + ar[i];
+			if(val < maxNum - maxNum % range) return min + (val % range);
+		}
 	}
 
 	static generateCodes(){
