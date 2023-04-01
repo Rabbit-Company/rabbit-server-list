@@ -1,5 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
-
 export default class Utils{
 	static env;
 	static date;
@@ -132,6 +130,6 @@ export default class Utils{
 	}
 
 	static async generateSecret(){
-		return await this.generateHash(uuidv4());
+		return await this.generateHash(crypto.randomUUID());
 	}
 }
