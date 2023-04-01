@@ -1,5 +1,6 @@
 import Utils from './utils.js';
 import Errors from './errors.js';
+import Validate from './validate.js';
 import Account from './account.js';
 
 // Durable Objects
@@ -190,7 +191,7 @@ router.get('/v1/server/minecraft/:id/banner', async request => {
 
 	if(!request.req.headers.has('Content-Type')) return Utils.jsonResponse(Errors.getJson(1023));
 	let contentType = request.req.headers.get('Content-Type');
-	if(contentType !== 'image/gif') return Utils.jsonResponse(Errors.getJson(1024));
+	if(!Validate.bannerType(contentType)) return Utils.jsonResponse(Errors.getJson(1024));
 
 	let fileSize = request.req.headers.get('Content-Length');
 	if(fileSize > 3_000_000) return Utils.jsonResponse(Errors.getJson(1025));
