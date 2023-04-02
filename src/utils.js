@@ -85,7 +85,7 @@ export default class Utils{
 		var ar = new Uint8Array(requestBytes);
 
 		while (true){
-			window.crypto.getRandomValues(ar);
+			crypto.getRandomValues(ar);
 			var val = 0;
 			for(var i = 0;i < requestBytes;i++) val = (val << 8) + ar[i];
 			if(val < maxNum - maxNum % range) return min + (val % range);
