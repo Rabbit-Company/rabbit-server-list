@@ -19,6 +19,15 @@ bucket_name = 'rabbitserverlist'
 binding = "MAE"
 dataset = "rabbit-server-list-minecraft"
 
+[[queues.producers]]
+queue = "rabbit-server-list-minecraft-vote"
+binding = "MVQU"
+
+[[queues.consumers]]
+queue = "rabbit-server-list-minecraft-vote"
+max_batch_size = 10
+max_batch_timeout = 5
+
 [[durable_objects.bindings]]
 name = "MVDO"
 class_name = "MinecraftVoteDO"

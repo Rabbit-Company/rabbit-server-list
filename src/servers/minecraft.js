@@ -221,6 +221,85 @@ export default class Minecraft{
 		return { 'error': 0, 'info': 'success' };
 	}
 
+	static async vote2(id, username, turnstile){
+		if(!Validate.isPositiveInteger(id)) return Errors.getJson(1022);
+		if(!Validate.captcha(turnstile)) return Errors.getJson(1034);
+
+		let formData = new FormData();
+		formData.append('secret', Utils.env.CF_TURNSTILE_TOKEN);
+		formData.append('response', turnstile);
+		formData.append('remoteip', Utils.IP);
+
+		const url = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
+		const result = await fetch(url, { body: formData, method: 'POST' });
+		const outcome = await result.json();
+		if(!outcome.success) return Errors.getJson(1034);
+
+		let limitedIP = await Utils.getValue('server-minecraft-' + id + '-vote-limit-ip-' + Utils.IP);
+		if(limitedIP !== null) return JSON.parse(limitedIP);
+		let limitedUsername = await Utils.getValue('server-minecraft-' + id + '-vote-limit-username-' + username);
+		if(limitedUsername !== null) return JSON.parse(limitedUsername);
+
+		let doID = Utils.env.MVDO.idFromName(id);
+		let request = new Request('https://api.rabbitserverlist.com/vote', {
+			method: 'POST',
+			body: JSON.stringify({ 'username': username, 'ip': Utils.IP }),
+			headers: { 'Content-Type': 'application/json' },
+		})
+		let response = await Utils.env.MVDO.get(doID).fetch(request);
+		let json = await response.json();
+		if(json.error !== 0){
+			if(json.error === 3001) await Utils.setValue('server-minecraft-' + id + '-vote-limit-ip-' + Utils.IP, JSON.stringify(json), 600);
+			if(json.error === 3002) await Utils.setValue('server-minecraft-' + id + '-vote-limit-username-' + username, JSON.stringify(json), 600);
+			return json;
+		}
+
+		try{
+			await Utils.env.DB.prepare("UPDATE minecraft SET votes = votes + 1, votes_total = votes_total + 1 WHERE id = ?").bind(id).run();
+		}catch{
+			return Errors.getJson(1009);
+		}
+
+		let votifierIP = null;
+		let votifierPort = null;
+		let votifierToken = null;
+
+		let data = await Utils.getValue('server-minecraft-' + id + '-votifier');
+		if(data !== null){
+			data = JSON.parse(data);
+			votifierIP = data.votifierIP;
+			votifierPort = data.votifierPort;
+			votifierToken = data.votifierToken;
+		}else{
+			try{
+				const result = await Utils.env.DB.prepare("SELECT votifierIP, votifierPort, votifierToken FROM minecraft WHERE id = ?").bind(id).first();
+				await Utils.setValue('server-minecraft-' + id + '-votifier', JSON.stringify(result), 3600);
+
+				votifierIP = result.votifierIP;
+				votifierPort = result.votifierPort;
+				votifierToken = result.votifierToken;
+			}catch{}
+		}
+
+		if(votifierIP && votifierPort && votifierToken){
+			let queueData = {
+				'ip': votifierIP,
+				'port': votifierPort,
+				'token': votifierToken,
+				'username': username
+			};
+
+			try{
+				await Utils.env.MVQU.send(queueData);
+			}catch{
+				//let votes = { 'authToken': Utils.env.CRAWLER_SECRET_TOKEN, 'votes': [queueData] };
+				//await fetch('https://crawler.rabbitserverlist.com/v2/servers/minecraft/vote', { method: 'POST', body: JSON.stringify(votes) });
+			}
+		}
+
+		return { 'error': 0, 'info': 'success' };
+	}
+
 	static async getVotes(id){
 		if(!Validate.isPositiveInteger(id)) return Errors.getJson(1022);
 
