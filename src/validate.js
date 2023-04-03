@@ -121,7 +121,7 @@ export default class Validate{
 
 	static minecraftServerCategory(category){
 		if(typeof(category) !== 'object') return false;
-		if(!(category.length >= 1 && category.length <= 5)) return false;
+		if(!(category.length >= 1 && category.length <= this.minecraftServerCategoryList.length)) return false;
 		for(let i = 0; i < category.length; i++){
 			if(!this.minecraftServerCategoryList.includes(category[i])) return false;
 		}
