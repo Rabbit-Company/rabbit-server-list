@@ -78,6 +78,8 @@ export default class Discord{
 		let guild_id = resData.guild?.id;
 		let icon = resData.guild?.icon;
 
+		if(!Validate.snowflake(guild_id)) return Errors.getJson(1009);
+
 		let members = resData['approximate_presence_count'];
 		let members_total = resData['approximate_member_count'];
 

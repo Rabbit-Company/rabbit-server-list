@@ -44,6 +44,14 @@ export default class Validate{
 		return isInteger && isPositive;
 	}
 
+	static snowflake(snowflake){
+		try{
+			return BigInt(snowflake).toString() === snowflake;
+		}catch{
+			return false;
+		}
+	}
+
 	static URL(url){
 		try{
 			new URL(url);
