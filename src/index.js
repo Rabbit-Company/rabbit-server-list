@@ -8,6 +8,7 @@ export { MinecraftVoteDO } from './dos.js';
 
 // Servers
 import Minecraft from './servers/minecraft.js';
+import Discord from './servers/discord.js';
 
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
@@ -20,6 +21,12 @@ router.use('*', cors({
 	maxAge: 86400,
 	credentials: true,
 }));
+
+/*
+
+	Account
+
+*/
 
 router.post('/v1/account', async request => {
 	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
@@ -63,6 +70,12 @@ router.get('/v1/account/token', async request => {
 	let message = await Account.token(auth.user, auth.pass);
 	return Utils.jsonResponse(message);
 });
+
+/*
+
+	Minecraft Servers
+
+*/
 
 router.post('/v1/account/servers/minecraft', async request => {
 	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
@@ -179,21 +192,6 @@ router.post('/v1/server/minecraft/:id/vote', async request => {
 	return Utils.jsonResponse(message);
 });
 
-// Remove this API endpoint
-router.post('/v2/server/minecraft/:id/vote', async request => {
-	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
-
-	let data = {};
-	try{
-		data = await request.req.json();
-	}catch{
-		return Utils.jsonResponse(Errors.getJson(1000));
-	}
-
-	let message = await Minecraft.vote(request.req.param('id'), data['username'], data['turnstile']);
-	return Utils.jsonResponse(message);
-});
-
 router.get('/v1/server/minecraft/:id/banner', async request => {
 	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
 
@@ -216,6 +214,37 @@ router.get('/v1/server/minecraft/:id/banner', async request => {
 
 	const options = { httpMetadata: { contentType: contentType, } };
 	let message = await Minecraft.saveBanner(auth.user, auth.pass, request.req.param('id'), request.req.body, options);
+	return Utils.jsonResponse(message);
+});
+
+/*
+
+	Discord Servers
+
+*/
+
+router.post('/v1/account/servers/discord', async request => {
+	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
+
+	const auth = Utils.basicAuthentication(request.req.headers.get('Authorization'));
+	if(auth === null) return Utils.jsonResponse(Errors.getJson(1006));
+
+	let data = {};
+	try{
+		data = await request.req.json();
+	}catch{
+		return Utils.jsonResponse(Errors.getJson(1000));
+	}
+
+	let message = await Discord.add(auth.user, auth.pass, data);
+	return Utils.jsonResponse(message);
+}).get(async request => {
+	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
+
+	const auth = Utils.basicAuthentication(request.req.headers.get('Authorization'));
+	if(auth === null) return Utils.jsonResponse(Errors.getJson(1006));
+
+	let message = await Discord.listOwner(auth.user, auth.pass);
 	return Utils.jsonResponse(message);
 });
 
