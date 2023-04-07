@@ -15,7 +15,7 @@ export default class Discord{
 		if(data !== null) return { 'error': 0, 'info': 'success', 'data': JSON.parse(data) };
 
 		try{
-			const { results } = await Utils.env.DB.prepare("SELECT id, owner, invite_code, guild_id, name, categories, country, description, members, members_total, votes, votes_total, created, updated FROM discord ORDER BY votes DESC LIMIT " + limit + " OFFSET " + offset).all();
+			const { results } = await Utils.env.DB.prepare("SELECT id, owner, invite_code, guild_id, icon, name, keywords, description, members, members_total, votes, votes_total, created, updated FROM discord ORDER BY votes DESC LIMIT " + limit + " OFFSET " + offset).all();
 			await Utils.setValue('servers-discord-list-' + page, JSON.stringify(results), 60);
 			return { 'error': 0, 'info': 'success', 'data': results };
 		}catch{
@@ -30,7 +30,7 @@ export default class Discord{
 		if(!(await Utils.authenticate(username, token))) return Errors.getJson(1008);
 
 		try{
-			const { results } = await Utils.env.DB.prepare("SELECT id, owner, invite_code, guild_id, name, categories, country, description, members, members_total, votes, votes_total, created, updated FROM discord WHERE owner = ?").bind(username).all();
+			const { results } = await Utils.env.DB.prepare("SELECT id, owner, invite_code, guild_id, icon, name, keywords, description, members, members_total, votes, votes_total, created, updated FROM discord WHERE owner = ?").bind(username).all();
 			return { 'error': 0, 'info': 'success', 'data': results };
 		}catch{
 			return Errors.getJson(1009);
@@ -44,12 +44,73 @@ export default class Discord{
 		if(data !== null) return { 'error': 0, 'info': 'success', 'data': JSON.parse(data) };
 
 		try{
-			const result = await Utils.env.DB.prepare("SELECT id, owner, invite_code, guild_id, name, categories, country, description, members, members_total, votes, votes_total, created, updated FROM discord WHERE id = ?").bind(id).first();
+			const result = await Utils.env.DB.prepare("SELECT id, owner, invite_code, guild_id, icon, name, keywords, description, members, members_total, votes, votes_total, created, updated FROM discord WHERE id = ?").bind(id).first();
 			await Utils.setValue('server-discord-' + id, JSON.stringify(result), 60);
 			return { 'error': 0, 'info': 'success', 'data': result };
 		}catch{
 			return Errors.getJson(1009);
 		}
+	}
+
+	static async add(username, token, data){
+		if(!Validate.username(username)) return Errors.getJson(1001);
+		if(!Validate.token(token)) return Errors.getJson(1004);
+
+		if(!Validate.serverName(data['name'])) return Errors.getJson(1010);
+		if(!Validate.description(data['description'])) return Errors.getJson(1018);
+
+		if(!(await Utils.authenticate(username, token))) return Errors.getJson(1008);
+
+		let keywords = "";
+		for(let i = 0; i < data['keywords'].length; i++){
+			keywords += data['keywords'][i] + ',';
+		}
+		keywords = keywords.substring(0, keywords.length-1);
+
+		let res = await fetch('https://discord.com/api/v10/invites/' + data['invite_code'] + '?with_counts=true&with_expiration=true');
+		if(!res.ok) return Errors.getJson(1009);
+		if(res.status === 404) return Errors.getJson(1036);
+		if(res.status !== 200) return Errors.getJson(1009);
+
+		let resData = await res.json();
+		if(resData['expires_at'] !== null) return Errors.getJson(1037);
+
+		let guild_id = resData.guild?.id;
+		let icon = resData.guild?.icon;
+
+		let members = resData['approximate_presence_count'];
+		let members_total = resData['approximate_member_count'];
+
+		if(!Validate.isPositiveInteger(members)) return Errors.getJson(1009);
+		if(!Validate.isPositiveInteger(members_total)) return Errors.getJson(1009);
+
+		try{
+			await Utils.env.DB.prepare("INSERT INTO discord(owner, invite_code, guild_id, icon, name, keywords, description, members, members_total, created, updated) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+			.bind(username, data['invite_code'], data['invite_code'], guild_id, icon, data['name'], keywords, data['description'], members, members_total, Utils.date, Utils.date).run();
+		}catch{
+			return Errors.getJson(1032);
+		}
+
+		return Errors.getJson(0);
+	}
+
+	static async delete(username, token, id){
+		if(!Validate.username(username)) return Errors.getJson(1001);
+		if(!Validate.token(token)) return Errors.getJson(1004);
+
+		if(!Validate.isPositiveInteger(id)) return Errors.getJson(1022);
+
+		if(!(await Utils.authenticate(username, token))) return Errors.getJson(1008);
+		if(!(await Utils.ownsServer('discord', username, id))) return Errors.getJson(9999);
+
+		try{
+			await Utils.deleteValue('server-discord-' + id);
+			await Utils.env.DB.prepare("DELETE FROM discord WHERE id = ?").bind(id).run();
+		}catch{
+			return Errors.getJson(1009);
+		}
+
+		return Errors.getJson(0);
 	}
 
 }
