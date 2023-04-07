@@ -37,3 +37,21 @@ CREATE TABLE minecraft (
 	updated TEXT NOT NULL,
 	UNIQUE(ip, port)
 );
+
+CREATE TABLE discord (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	owner TEXT NOT NULL,
+	invite_code TEXT NOT NULL,
+	guild_id TEXT NOT NULL,
+	name TEXT NOT NULL,
+	categories TEXT NOT NULL,
+	country TEXT NOT NULL,
+	description TEXT NOT NULL,
+	members INTEGER NOT NULL DEFAULT 0,
+	members_total INTEGER NOT NULL DEFAULT 0,
+	votes INTEGER NOT NULL DEFAULT 0,
+	votes_total INTEGER NOT NULL DEFAULT 0,
+	created TEXT NOT NULL,
+	updated TEXT NOT NULL,
+	UNIQUE(guild_id)
+);
