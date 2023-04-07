@@ -98,6 +98,36 @@ export default class Discord{
 		return Errors.getJson(0);
 	}
 
+	static async edit(username, token, id, data){
+		if(!Validate.username(username)) return Errors.getJson(1001);
+		if(!Validate.token(token)) return Errors.getJson(1004);
+
+		if(!Validate.isPositiveInteger(id)) return Errors.getJson(1022);
+
+		if(!Validate.discordInviteCode(data['invite_code'])) return Errors.getJson(1036);
+		if(!Validate.description(data['description'])) return Errors.getJson(1018);
+		if(!Validate.keywords(data['keywords'])) return Errors.getJson(1038);
+
+		if(!(await Utils.authenticate(username, token))) return Errors.getJson(1008);
+		if(!(await Utils.ownsServer('discord', username, id))) return Errors.getJson(9999);
+
+		let keywords = "";
+		for(let i = 0; i < data['keywords'].length; i++){
+			keywords += data['keywords'][i] + ',';
+		}
+		keywords = keywords.substring(0, keywords.length-1);
+
+		try{
+			await Utils.env.DB.prepare("UPDATE discord SET invite_code = ?, description = ?, keywords = ? WHERE id = ?")
+			.bind(data['invite_code'], data['description'], data['keywords'], id).run();
+			await Utils.deleteValue('server-discord-' + id);
+		}catch{
+			return Errors.getJson(1009);
+		}
+
+		return Errors.getJson(0);
+	}
+
 	static async delete(username, token, id){
 		if(!Validate.username(username)) return Errors.getJson(1001);
 		if(!Validate.token(token)) return Errors.getJson(1004);
