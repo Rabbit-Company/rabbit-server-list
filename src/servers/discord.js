@@ -106,6 +106,7 @@ export default class Discord{
 		if(!Validate.isPositiveInteger(id)) return Errors.getJson(1022);
 
 		if(!Validate.discordInviteCode(data['invite_code'])) return Errors.getJson(1036);
+		if(!Validate.discordServerCategory(data['category'])) return Errors.getJson(1039);
 		if(!Validate.description(data['description'])) return Errors.getJson(1018);
 		if(!Validate.keywords(data['keywords'])) return Errors.getJson(1038);
 
@@ -120,7 +121,7 @@ export default class Discord{
 
 		try{
 			await Utils.env.DB.prepare("UPDATE discord SET invite_code = ?, category = ?, description = ?, keywords = ? WHERE id = ?")
-			.bind(data['invite_code'], data['category'], data['description'], data['keywords'], id).run();
+			.bind(data['invite_code'], data['category'], data['description'], keywords, id).run();
 			await Utils.deleteValue('server-discord-' + id);
 		}catch{
 			return Errors.getJson(1009);
