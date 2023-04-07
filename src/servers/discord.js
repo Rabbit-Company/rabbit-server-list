@@ -59,6 +59,7 @@ export default class Discord{
 		if(!Validate.discordInviteCode(data['invite_code'])) return Errors.getJson(1036);
 		if(!Validate.serverName(data['name'])) return Errors.getJson(1010);
 		if(!Validate.description(data['description'])) return Errors.getJson(1018);
+		if(!Validate.keywords(data['keywords'])) return Errors.getJson(1038);
 
 		if(!(await Utils.authenticate(username, token))) return Errors.getJson(1008);
 

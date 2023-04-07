@@ -84,6 +84,12 @@ export default class Validate{
 		return false;
 	}
 
+	static keywords(keywords){
+		if(typeof(keywords) !== 'object') return false;
+		if(!(keywords.length >= 1 && keywords.length <= 10)) return false;
+		return true;
+	}
+
 	static ip(ip){
 		if(typeof(ip) !== 'string') return false;
 		return /^([A-Za-z0-9\-. ]{4,50})$/.test(ip);
