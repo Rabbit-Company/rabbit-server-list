@@ -57,7 +57,6 @@ export default class Discord{
 		if(!Validate.token(token)) return Errors.getJson(1004);
 
 		if(!Validate.discordInviteCode(data['invite_code'])) return Errors.getJson(1036);
-		if(!Validate.serverName(data['name'])) return Errors.getJson(1010);
 		if(!Validate.description(data['description'])) return Errors.getJson(1018);
 		if(!Validate.keywords(data['keywords'])) return Errors.getJson(1038);
 
@@ -78,6 +77,7 @@ export default class Discord{
 		if(resData['expires_at'] !== null) return Errors.getJson(1037);
 
 		let guild_id = resData.guild?.id;
+		let name = resData.guild?.name;
 		let icon = resData.guild?.icon;
 
 		if(!Validate.snowflake(guild_id)) return Errors.getJson(1009);
@@ -90,7 +90,7 @@ export default class Discord{
 
 		try{
 			await Utils.env.DB.prepare("INSERT INTO discord(owner, invite_code, guild_id, icon, name, keywords, description, members, members_total, created, updated) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
-			.bind(username, data['invite_code'], guild_id, icon, data['name'], keywords, data['description'], members, members_total, Utils.date, Utils.date).run();
+			.bind(username, data['invite_code'], guild_id, icon, name, keywords, data['description'], members, members_total, Utils.date, Utils.date).run();
 		}catch{
 			return Errors.getJson(1032);
 		}
