@@ -179,6 +179,7 @@ router.post('/v1/server/minecraft/:id/vote', async request => {
 	return Utils.jsonResponse(message);
 });
 
+// Remove this API endpoint
 router.post('/v2/server/minecraft/:id/vote', async request => {
 	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
 
@@ -189,7 +190,7 @@ router.post('/v2/server/minecraft/:id/vote', async request => {
 		return Utils.jsonResponse(Errors.getJson(1000));
 	}
 
-	let message = await Minecraft.vote2(request.req.param('id'), data['username'], data['turnstile']);
+	let message = await Minecraft.vote(request.req.param('id'), data['username'], data['turnstile']);
 	return Utils.jsonResponse(message);
 });
 
