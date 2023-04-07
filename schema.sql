@@ -45,6 +45,7 @@ CREATE TABLE discord (
 	guild_id TEXT NOT NULL,
 	icon TEXT,
 	name TEXT NOT NULL,
+	category TEXT NOT NULL,
 	keywords TEXT NOT NULL,
 	description TEXT NOT NULL,
 	members INTEGER NOT NULL DEFAULT 0,
