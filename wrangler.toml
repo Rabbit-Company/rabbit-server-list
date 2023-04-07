@@ -1,6 +1,6 @@
 name = "rabbit-server-list"
 main = "src/index.js"
-compatibility_date = "2023-03-21"
+compatibility_date = "2023-04-07"
 
 [[kv_namespaces]]
 binding = "KV"

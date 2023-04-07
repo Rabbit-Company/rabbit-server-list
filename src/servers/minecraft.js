@@ -292,8 +292,8 @@ export default class Minecraft{
 			try{
 				await Utils.env.MVQU.send(queueData);
 			}catch{
-				//let votes = { 'authToken': Utils.env.CRAWLER_SECRET_TOKEN, 'votes': [queueData] };
-				//await fetch('https://crawler.rabbitserverlist.com/v2/servers/minecraft/vote', { method: 'POST', body: JSON.stringify(votes) });
+				let votes = { 'authToken': Utils.env.CRAWLER_SECRET_TOKEN, 'votes': [queueData] };
+				await fetch('https://crawler.rabbitserverlist.com/v2/servers/minecraft/vote', { method: 'POST', body: JSON.stringify(votes) });
 			}
 		}
 
