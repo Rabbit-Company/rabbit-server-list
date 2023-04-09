@@ -111,7 +111,7 @@ export class MinecraftVoteDO{
 			if(votes == null){
 				await this.state.storage.put('votes-' + data['username'], 1);
 			}else{
-				await this.state.storage.put('votes-' + data['username'], votes++);
+				await this.state.storage.put('votes-' + data['username'], ++votes);
 			}
 
 			/*
@@ -209,7 +209,7 @@ export class DiscordVoteDO{
 			if(votes == null){
 				await this.state.storage.put('votes-' + data['username'], 1);
 			}else{
-				await this.state.storage.put('votes-' + data['username'], votes++);
+				await this.state.storage.put('votes-' + data['username'], ++votes);
 			}
 
 			return DiscordVoteDO.jsonResponse({ 'error': 0, 'info': 'success' });
