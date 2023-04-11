@@ -248,6 +248,20 @@ router.post('/v1/account/servers/discord', async request => {
 	return Utils.jsonResponse(message);
 });
 
+router.get('/v1/servers/discord/page/:page', async request => {
+	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
+
+	let message = await Discord.list(request.req.param('page'));
+	return Utils.jsonResponse(message);
+});
+
+router.get('/v1/servers/discord/page/:page/filter/:filter/:value', async request => {
+	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
+
+	let message = await Discord.listFilter(request.req.param('page'), request.req.param('filter'), request.req.param('value'));
+	return Utils.jsonResponse(message);
+});
+
 router.post('/v1/server/discord/:id', async request => {
 	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
 

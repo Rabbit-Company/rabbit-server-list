@@ -23,6 +23,40 @@ export default class Discord{
 		}
 	}
 
+	static async listFilter(page, filter, value){
+		if(!Validate.isPositiveInteger(page)) page = 1;
+		if(!Validate.discordServerFilter(filter)) return Errors.getJson(1035);
+
+		if(filter === 'query'){
+			if(!Validate.query(value)) return Errors.getJson(1035);
+		}else if(filter === 'category'){
+			if(!Validate.discordServerCategory(value)) return Errors.getJson(1035);
+		}
+
+		if(page > 100) page = 100;
+
+		let limit = 20;
+		let offset = limit * (page - 1);
+
+		let data = await Utils.getValue('servers-discord-list-' + page + '-filter-' + filter + '-' + value);
+		if(data !== null) return { 'error': 0, 'info': 'success', 'data': JSON.parse(data) };
+
+		let sql;
+		if(filter === 'query'){
+			sql = Utils.env.DB.prepare("SELECT id, owner, invite_code, guild_id, icon, banner, splash, name, category, keywords, description, members, members_total, votes, votes_total, created, updated FROM discord WHERE keywords LIKE '%" + value + "%' ORDER BY votes DESC LIMIT " + limit + " OFFSET " + offset);
+		}else if(filter === 'category'){
+			sql = Utils.env.DB.prepare("SELECT id, owner, invite_code, guild_id, icon, banner, splash, name, category, keywords, description, members, members_total, votes, votes_total, created, updated FROM discord WHERE category = ? ORDER BY votes DESC LIMIT " + limit + " OFFSET " + offset).bind(value);
+		}
+
+		try{
+			const { results } = await sql.all();
+			await Utils.setValue('servers-discord-list-' + page + '-filter-' + filter + '-' + value, JSON.stringify(results), 60);
+			return { 'error': 0, 'info': 'success', 'data': results };
+		}catch{
+			return Errors.getJson(1009);
+		}
+	}
+
 	static async listOwner(username, token){
 		if(!Validate.username(username)) return Errors.getJson(1001);
 		if(!Validate.token(token)) return Errors.getJson(1004);

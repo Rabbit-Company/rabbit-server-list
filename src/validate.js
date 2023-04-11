@@ -8,6 +8,7 @@ export default class Validate{
 	static minecraftServerFilterList = ['version', 'category', 'country'];
 
 	static discordServerCategoryList = ['Gaming', 'Entertainment', 'Education', 'Science & Tech', 'Music'];
+	static discordServerFilterList = ['category', 'query'];
 
 	static username(username){
 		if(typeof(username) !== 'string') return false;
@@ -159,6 +160,16 @@ export default class Validate{
 	static discordServerCategory(category){
 		if(typeof(category) !== 'string') return false;
 		return this.discordServerCategoryList.includes(category);
+	}
+
+	static discordServerFilter(filter){
+		if(typeof(filter) !== 'string') return false;
+		return this.discordServerFilterList.includes(filter);
+	}
+
+	static query(query){
+		if(typeof(query) !== 'string') return false;
+		return /^([a-z0-9]{3,29})$/.test(query);
 	}
 
 }
