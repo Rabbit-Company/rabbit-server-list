@@ -44,6 +44,8 @@ CREATE TABLE discord (
 	invite_code TEXT NOT NULL,
 	guild_id TEXT NOT NULL,
 	icon TEXT,
+	banner TEXT,
+	splash TEXT,
 	name TEXT NOT NULL,
 	category TEXT NOT NULL,
 	keywords TEXT NOT NULL,
@@ -52,6 +54,7 @@ CREATE TABLE discord (
 	members_total INTEGER NOT NULL DEFAULT 0,
 	votes INTEGER NOT NULL DEFAULT 0,
 	votes_total INTEGER NOT NULL DEFAULT 0,
+	secretToken TEXT NOT NULL,
 	created TEXT NOT NULL,
 	updated TEXT NOT NULL,
 	UNIQUE(guild_id)
