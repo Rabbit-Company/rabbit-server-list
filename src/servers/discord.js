@@ -86,6 +86,94 @@ export default class Discord{
 		}
 	}
 
+	static async vote(id, code, turnstile){
+		if(!Validate.isPositiveInteger(id)) return Errors.getJson(1022);
+		if(!Validate.captcha(turnstile)) return Errors.getJson(1034);
+
+		let formData = new FormData();
+		formData.append('secret', Utils.env.CF_TURNSTILE_TOKEN);
+		formData.append('response', turnstile);
+		formData.append('remoteip', Utils.IP);
+
+		let url = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
+		let result = await fetch(url, { body: formData, method: 'POST' });
+		let outcome = await result.json();
+		if(!outcome.success) return Errors.getJson(1034);
+
+		let limitedIP = await Utils.getValue('server-discord-' + id + '-vote-limit-ip-' + Utils.IP);
+		if(limitedIP !== null) return JSON.parse(limitedIP);
+
+		formData = new FormData();
+		formData.append('client_id', Utils.env.DISCORD_CLIENT_ID);
+		formData.append('client_secret', Utils.env.DISCORD_CLIENT_SECRET);
+		formData.append('grant_type', 'authorization_code');
+		formData.append('code', code);
+		formData.append('redirect_uri', 'https://rabbitserverlist.com/discord');
+
+		url = 'https://discord.com/api/v10/oauth2/token';
+		result = await fetch(url, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: formData, method: 'POST'});
+		if(!result.ok || result.status !== 200) return Errors.getJson(1040);
+		outcome = await result.json();
+
+		let access_token = outcome.access_token;
+		if(typeof(access_token) !== 'string') return Errors.getJson(1040);
+
+		url = 'https://discord.com/api/v10/oauth2/@me';
+		result = await fetch(url, { headers: { Authentication: 'Bearer ' + access_token }, method: 'GET' });
+		if(!result.ok || result.status !== 200) return Errors.getJson(1040);
+		outcome = await result.json();
+
+		let userData = outcome.user;
+		if(typeof(userData) !== 'object' || typeof(userData.id) !== 'string') return Errors.getJson(1040);
+
+		let limitedDiscordID = await Utils.getValue('server-discord-' + id + '-vote-limit-id-' + userData.id);
+		if(limitedDiscordID !== null) return JSON.parse(limitedDiscordID);
+
+		let doID = Utils.env.DVDO.idFromName(id);
+		let request = new Request('https://api.rabbitserverlist.com/vote', {
+			method: 'POST',
+			body: JSON.stringify({ 'id': userData.id, 'ip': Utils.IP, 'username': userData.username, 'avatar': userData.avatar, 'discriminator': userData.discriminator }),
+			headers: { 'Content-Type': 'application/json' },
+		})
+		let response = await Utils.env.DVDO.get(doID).fetch(request);
+		let json = await response.json();
+		if(json.error !== 0){
+			if(json.error === 3001) await Utils.setValue('server-discord-' + id + '-vote-limit-ip-' + Utils.IP, JSON.stringify(json), 600);
+			if(json.error === 3002) await Utils.setValue('server-discord-' + id + '-vote-limit-id-' + userData.id, JSON.stringify(json), 600);
+			return json;
+		}
+
+		try{
+			await Utils.env.DB.prepare("UPDATE discord SET votes = votes + 1, votes_total = votes_total + 1 WHERE id = ?").bind(id).run();
+		}catch{
+			return Errors.getJson(1009);
+		}
+
+		return { 'error': 0, 'info': 'success' };
+	}
+
+	static async getVotes(id){
+		if(!Validate.isPositiveInteger(id)) return Errors.getJson(1022);
+
+		let votes = await Utils.getValue('server-discord-' + id + '-votes', 600);
+		if(votes !== null) return JSON.parse(votes);
+
+		let doID = Utils.env.DVDO.idFromName(id);
+		let request = new Request('https://api.rabbitserverlist.com/votes/get');
+		let response = await Utils.env.DVDO.get(doID).fetch(request);
+		let json = await response.json();
+
+		await Utils.setValue('server-discord-' + id + '-votes', JSON.stringify(json), 3600);
+
+		return json;
+	}
+
+	static async resetVotes(env){
+		try{
+			await env.DB.prepare("UPDATE discord SET votes = 0").run();
+		}catch{}
+	}
+
 	static async add(username, token, data){
 		if(!Validate.username(username)) return Errors.getJson(1001);
 		if(!Validate.token(token)) return Errors.getJson(1004);

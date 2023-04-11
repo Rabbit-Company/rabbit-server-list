@@ -4,7 +4,7 @@ import Validate from './validate.js';
 import Account from './account.js';
 
 // Durable Objects
-export { MinecraftVoteDO } from './dos.js';
+export { MinecraftVoteDO, DiscordVoteDO } from './dos.js';
 
 // Servers
 import Minecraft from './servers/minecraft.js';
@@ -292,6 +292,25 @@ router.post('/v1/server/discord/:id', async request => {
 	return Utils.jsonResponse(message);
 });
 
+router.post('/v1/server/discord/:id/vote', async request => {
+	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
+
+	let data = {};
+	try{
+		data = await request.req.json();
+	}catch{
+		return Utils.jsonResponse(Errors.getJson(1000));
+	}
+
+	let message = await Discord.vote(request.req.param('id'), data['code'], data['turnstile']);
+	return Utils.jsonResponse(message);
+}).get(async request => {
+	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
+
+	let message = await Discord.getVotes(request.req.param('id'));
+	return Utils.jsonResponse(message);
+});
+
 router.all("*", () => {
 	return Utils.jsonResponse({ "error": 404, "info": "Invalid API endpoint" }, 404);
 });
@@ -300,6 +319,7 @@ export default {
 	fetch: router.fetch,
 	async scheduled(event, env, ctx) {
 		await Minecraft.resetVotes(env);
+		await Discord.resetVotes(env);
 	},
 	async queue(batch, env){
 		let votes = [];

@@ -42,6 +42,7 @@ export default class Errors{
 		1037: 'Invite link can not have an expiration date.',
 		1038: 'You need to choose between 1 and 10 keywords.',
 		1039: 'Server category is invalid.',
+		1040: 'Something went wrong while trying to get data from Discord API. Please try again later.',
 		9999: 'Your do not have permission to perform this action.'
 	};
 

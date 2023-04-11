@@ -28,21 +28,6 @@ export class MinecraftVoteDO{
 	}
 
 	async alarm(){
-		/*
-		let votes = await this.state.storage.get('votes');
-		if(votes !== null){
-			let monthlyVotes = votes['monthly'];
-
-			let votesHistory = await this.state.storage.get('votes-history');
-			let prevDate = new Date(new Date().getFullYear(), new Date().getMonth()-1, 1);
-			if(votesHistory === null) votesHistory = {};
-			votesHistory[prevDate.getFullYear() + '-' + prevDate.getMonth()] = monthlyVotes;
-			await this.state.storage.put('votes-history', votesHistory);
-
-			votes['monthly'] = 0;
-			await this.state.storage.put('votes', votes);
-		}
-		*/
 		await this.state.storage.deleteAll();
 	}
 
@@ -65,24 +50,6 @@ export class MinecraftVoteDO{
 
 			return MinecraftVoteDO.jsonResponse({ 'error': 0, 'info': 'success', 'data': data });
 		}
-
-		// Get number of votes
-		/*
-		if(url.pathname === '/votes/get'){
-			let votes = await this.state.storage.get('votes');
-			if(votes == null) return MinecraftVoteDO.jsonResponse({ 'error': 0, 'info': 'success', 'data': { 'monthly': 0, 'total': 0 } });
-			return MinecraftVoteDO.jsonResponse({ 'error': 0, 'info': 'success', 'data': votes });
-		}
-		*/
-
-		// Get history of votes
-		/*
-		if(url.pathname === '/votes/history/get'){
-			let historyVotes = await this.state.storage.get('votes-history');
-			if(historyVotes == null) return MinecraftVoteDO.jsonResponse({ 'error': 0, 'info': 'success', 'data': {} });
-			return MinecraftVoteDO.jsonResponse({ 'error': 0, 'info': 'success', 'data': historyVotes });
-		}
-		*/
 
 		// Vote
 		if(url.pathname === '/vote'){
@@ -113,14 +80,6 @@ export class MinecraftVoteDO{
 			}else{
 				await this.state.storage.put('votes-' + data['username'], ++votes);
 			}
-
-			/*
-			let votes = await this.state.storage.get('votes');
-			if(votes == null) votes = { 'monthly': 0, 'total': 0 };
-			votes['monthly']++;
-			votes['total']++;
-			await this.state.storage.put('votes', votes);
-			*/
 
 			return MinecraftVoteDO.jsonResponse({ 'error': 0, 'info': 'success' });
 		}
@@ -175,9 +134,11 @@ export class DiscordVoteDO{
 			let map = await this.state.storage.list({ prefix: 'votes-', limit: 100 });
 
 			const data = {};
-			map.forEach((value, key) => {
-				data[key.replace('votes-', '')] = value;
-			});
+			for(let [key, value] of map){
+				let userData = await this.state.storage.get('user-data-' + data['id']);
+				if(userData == null) continue;
+				data[key.replace('votes-', '')] = { 'username': userData.username, 'avatar': userData.avatar, 'discriminator': userData.discriminator, 'votes': value };
+			}
 
 			return DiscordVoteDO.jsonResponse({ 'error': 0, 'info': 'success', 'data': data });
 		}
@@ -186,7 +147,7 @@ export class DiscordVoteDO{
 		if(url.pathname === '/vote'){
 			let data = await request.json();
 
-			if(!data['username'] || !data['ip']) return DiscordVoteDO.jsonResponse({ 'error': 1000, 'info': 'Not all required data provided in json format.' });
+			if(!data['id'] || !data['ip'] || !data['username'] || !data['avatar'] || !data['discriminator']) return DiscordVoteDO.jsonResponse({ 'error': 1000, 'info': 'Not all required data provided in json format.' });
 
 			let ipVoteDate = await this.state.storage.get('votedate-ip-' + data['ip']);
 			if(ipVoteDate != null){
@@ -195,21 +156,22 @@ export class DiscordVoteDO{
 				}
 			}
 
-			let usernameVoteDate = await this.state.storage.get('votedate-username-' + data['username']);
-			if(usernameVoteDate != null){
-				if((Date.now() - DiscordVoteDO.voteLimit) < Number(usernameVoteDate)){
-					return DiscordVoteDO.jsonResponse({ 'error': 3002, 'info': 'You have already voted for this server today.\nYou will be able to vote again in approximately ' + DiscordVoteDO.durationBetween(Number(usernameVoteDate) + DiscordVoteDO.voteLimit, Date.now()) });
+			let idVoteDate = await this.state.storage.get('votedate-id-' + data['id']);
+			if(idVoteDate != null){
+				if((Date.now() - DiscordVoteDO.voteLimit) < Number(idVoteDate)){
+					return DiscordVoteDO.jsonResponse({ 'error': 3002, 'info': 'You have already voted for this server today.\nYou will be able to vote again in approximately ' + DiscordVoteDO.durationBetween(Number(idVoteDate) + DiscordVoteDO.voteLimit, Date.now()) });
 				}
 			}
 
 			await this.state.storage.put('votedate-ip-' + data['ip'], Date.now());
-			await this.state.storage.put('votedate-username-' + data['username'], Date.now());
+			await this.state.storage.put('votedate-id-' + data['id'], Date.now());
 
-			let votes = await this.state.storage.get('votes-' + data['username']);
+			let votes = await this.state.storage.get('votes-' + data['id']);
 			if(votes == null){
-				await this.state.storage.put('votes-' + data['username'], 1);
+				await this.state.storage.put('votes-' + data['id'], 1);
+				await this.state.storage.put('user-data-' + data['id'], { 'username': data['username'], 'avatar': data['avatar'], 'discriminator': data['discriminator'] });
 			}else{
-				await this.state.storage.put('votes-' + data['username'], ++votes);
+				await this.state.storage.put('votes-' + data['id'], ++votes);
 			}
 
 			return DiscordVoteDO.jsonResponse({ 'error': 0, 'info': 'success' });

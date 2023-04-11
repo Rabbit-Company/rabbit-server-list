@@ -29,13 +29,19 @@ max_batch_size = 10
 max_batch_timeout = 5
 max_retries = 10
 
-[[durable_objects.bindings]]
-name = "MVDO"
-class_name = "MinecraftVoteDO"
+[durable_objects]
+bindings = [
+	{ name = "MVDO", class_name = "MinecraftVoteDO" },
+	{ name = "DVDO", class_name = "DiscordVoteDO" }
+]
 
 [[migrations]]
 tag = "v1"
 new_classes = ["MinecraftVoteDO"]
+
+[[migrations]]
+tag = "v2"
+new_classes = ["DiscordVoteDO"]
 
 [triggers]
 crons = ["0 0 1 * *"]
