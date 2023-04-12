@@ -86,6 +86,49 @@ export default class Discord{
 		}
 	}
 
+	static async getStats(id){
+		if(!Validate.isPositiveInteger(id)) return Errors.getJson(1022);
+
+		let data = await Utils.getValue('server-discord-stats-' + id);
+		if(data !== null) return { 'error': 0, 'info': 'success', 'data': JSON.parse(data) };
+
+		const dataset = "rabbit-server-list-discord";
+		const endpoint = "https://api.cloudflare.com/client/v4/accounts/" + Utils.env.ACCOUNT_ID + "/analytics_engine/sql";
+
+		const query_members = `SELECT toStartOfInterval(timestamp, INTERVAL '1' HOUR) AS hour, AVG(double1) as avg, MIN(double1) as min, MAX(double1) as max FROM '${dataset}' WHERE index1 = '${id}' GROUP BY hour`;
+		const query_total_members = `SELECT toStartOfInterval(timestamp, INTERVAL '1' HOUR) AS hour, AVG(double2) as avg, MIN(double2) as min, MAX(double2) as max FROM '${dataset}' WHERE index1 = '${id}' GROUP BY hour`;
+
+		let options = {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'text/plain',
+				'Accept': 'application/json',
+				'Authorization': `Bearer ${Utils.env.CF_TOKEN}`,
+			},
+			body: query_members,
+		}
+
+		let response = { 'error': 0, 'info': 'success', 'data': { 'members': {}, 'members_total': {} }};
+
+		try{
+			const membersResponse = await fetch(endpoint, options);
+			let membersJson = await membersResponse.json();
+			response.data.members = membersJson.data;
+
+			options.body = query_total_members;
+
+			const membersTotalResponse = await fetch(endpoint, options);
+			let membersTotalJson = await membersTotalResponse.json();
+			response.data.members_total = membersTotalJson.data;
+
+			await Utils.setValue('server-discord-stats-' + id, JSON.stringify(response.data), 3600);
+			return response;
+		}catch{
+			return Errors.getJson(1009);
+		}
+
+	}
+
 	static async vote(id, code, turnstile){
 		if(!Validate.isPositiveInteger(id)) return Errors.getJson(1022);
 		if(!Validate.captcha(turnstile)) return Errors.getJson(1034);
