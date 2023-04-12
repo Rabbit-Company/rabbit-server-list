@@ -133,11 +133,12 @@ export class DiscordVoteDO{
 		if(url.pathname === '/votes/get'){
 			let map = await this.state.storage.list({ prefix: 'votes-', limit: 100 });
 
-			const data = {};
+			let data = {};
 			for(let [key, value] of map){
-				let userData = await this.state.storage.get('user-data-' + data['id']);
+				let id = key.replace('votes-', '');
+				let userData = await this.state.storage.get('user-data-' + id);
 				if(userData == null) continue;
-				data[key.replace('votes-', '')] = { 'username': userData.username, 'avatar': userData.avatar, 'discriminator': userData.discriminator, 'votes': value };
+				data[id] = { 'username': userData.username, 'avatar': userData.avatar, 'discriminator': userData.discriminator, 'votes': value };
 			}
 
 			return DiscordVoteDO.jsonResponse({ 'error': 0, 'info': 'success', 'data': data });
