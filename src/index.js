@@ -329,7 +329,7 @@ router.post('/v1/server/discord/:id/vote', async request => {
 		return Utils.jsonResponse(Errors.getJson(1000));
 	}
 
-	let message = await Discord.vote(request.req.param('id'), data['code'], data['turnstile']);
+	let message = await Discord.vote(request.req.param('id'), data['token'], data['turnstile']);
 	return Utils.jsonResponse(message);
 }).get(async request => {
 	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));

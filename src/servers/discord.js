@@ -129,7 +129,7 @@ export default class Discord{
 
 	}
 
-	static async vote(id, code, turnstile){
+	static async vote(id, token, turnstile){
 		if(!Validate.isPositiveInteger(id)) return Errors.getJson(1022);
 		if(!Validate.captcha(turnstile)) return Errors.getJson(1034);
 
@@ -146,24 +146,8 @@ export default class Discord{
 		let limitedIP = await Utils.getValue('server-discord-' + id + '-vote-limit-ip-' + Utils.IP);
 		if(limitedIP !== null) return JSON.parse(limitedIP);
 
-		formData = new URLSearchParams({
-			client_id: Utils.env.DISCORD_CLIENT_ID,
-			client_secret: Utils.env.DISCORD_CLIENT_SECRET,
-			grant_type: 'authorization_code',
-			code: code,
-			redirect_uri: 'http://localhost:9999/oauth.html'
-		}).toString();
-
-		url = 'https://discord.com/api/v10/oauth2/token';
-		result = await fetch(url, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: formData, method: 'POST'});
-		if(!result.ok || result.status !== 200) return Errors.getJson(1040);
-		outcome = await result.json();
-
-		let access_token = outcome.access_token;
-		if(typeof(access_token) !== 'string') return Errors.getJson(1040);
-
 		url = 'https://discord.com/api/v10/oauth2/@me';
-		result = await fetch(url, { headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${access_token}` }, method: 'GET' });
+		result = await fetch(url, { headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, method: 'GET' });
 		if(!result.ok || result.status !== 200) return Errors.getJson(1040);
 		outcome = await result.json();
 
