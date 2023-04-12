@@ -146,12 +146,13 @@ export default class Discord{
 		let limitedIP = await Utils.getValue('server-discord-' + id + '-vote-limit-ip-' + Utils.IP);
 		if(limitedIP !== null) return JSON.parse(limitedIP);
 
-		formData = new FormData();
-		formData.append('client_id', Utils.env.DISCORD_CLIENT_ID);
-		formData.append('client_secret', Utils.env.DISCORD_CLIENT_SECRET);
-		formData.append('grant_type', 'authorization_code');
-		formData.append('code', code);
-		formData.append('redirect_uri', 'https://rabbitserverlist.com/discord');
+		formData = new URLSearchParams({
+			client_id: Utils.env.DISCORD_CLIENT_ID,
+			client_secret: Utils.env.DISCORD_CLIENT_SECRET,
+			grant_type: 'authorization_code',
+			code: code,
+			redirect_uri: 'http://localhost:9999/oauth.html'
+		}).toString();
 
 		url = 'https://discord.com/api/v10/oauth2/token';
 		result = await fetch(url, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: formData, method: 'POST'});
@@ -162,7 +163,7 @@ export default class Discord{
 		if(typeof(access_token) !== 'string') return Errors.getJson(1040);
 
 		url = 'https://discord.com/api/v10/oauth2/@me';
-		result = await fetch(url, { headers: { Authentication: 'Bearer ' + access_token }, method: 'GET' });
+		result = await fetch(url, { headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${access_token}` }, method: 'GET' });
 		if(!result.ok || result.status !== 200) return Errors.getJson(1040);
 		outcome = await result.json();
 
