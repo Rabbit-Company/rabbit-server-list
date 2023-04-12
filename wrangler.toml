@@ -2,52 +2,44 @@ name = "rabbit-server-list"
 main = "src/index.js"
 compatibility_date = "2023-04-11"
 
-[[kv_namespaces]]
-binding = "KV"
-id = "8f6ee5b816384dc4a5736660603e0325"
+kv_namespaces = [
+	{ binding = "KV", id = "8f6ee5b816384dc4a5736660603e0325" }
+]
 
-[[d1_databases]]
-binding = "DB"
-database_name = "rabbit-server-list"
-database_id = "1167ecc9-c3e5-41c8-ae72-5e10c653cc40"
+d1_databases = [
+	{ binding = "DB", database_name = "rabbit-server-list", database_id = "1167ecc9-c3e5-41c8-ae72-5e10c653cc40" }
+]
 
-[[r2_buckets]]
-binding = 'R2'
-bucket_name = 'rabbitserverlist'
+r2_buckets = [
+	{ binding = 'R2', bucket_name = 'rabbitserverlist' }
+]
 
-[[analytics_engine_datasets]]
-binding = "MAE"
-dataset = "rabbit-server-list-minecraft"
+analytics_engine_datasets = [
+	{ binding = "MAE", dataset = "rabbit-server-list-minecraft" },
+	{ binding = "DAE", dataset = "rabbit-server-list-discord" }
+]
 
-[[queues.producers]]
-queue = "rabbit-server-list-minecraft-vote"
-binding = "MVQU"
+queues.producers = [
+	{ queue = "rabbit-server-list-minecraft-vote", binding = "MVQU" }
+]
 
-[[queues.consumers]]
-queue = "rabbit-server-list-minecraft-vote"
-max_batch_size = 10
-max_batch_timeout = 5
-max_retries = 10
+queues.consumers = [
+	{ queue = "rabbit-server-list-minecraft-vote", max_batch_size = 10, max_batch_timeout = 5, max_retries = 10 }
+]
 
-[durable_objects]
-bindings = [
+durable_objects.bindings = [
 	{ name = "MVDO", class_name = "MinecraftVoteDO" },
 	{ name = "DVDO", class_name = "DiscordVoteDO" }
 ]
 
-[[migrations]]
-tag = "v1"
-new_classes = ["MinecraftVoteDO"]
+migrations = [
+	{ tag = "v1", new_classes = ["MinecraftVoteDO"] },
+	{ tag = "v2", new_classes = ["DiscordVoteDO"] }
+]
 
-[[migrations]]
-tag = "v2"
-new_classes = ["DiscordVoteDO"]
+triggers = { crons = ["0 0 1 * *"] }
 
-[triggers]
-crons = ["0 0 1 * *"]
-
-[vars]
-ACCOUNT_ID = "eb996327383b1ba7869926dcb856b4ae"
+vars = { ACCOUNT_ID = "eb996327383b1ba7869926dcb856b4ae" }
 
 # Don't forget to add CRAWLER_SECRET_TOKEN with: wrangler secret put CRAWLER_SECRET_TOKEN
 # Don't forget to set the secret Cloudflare token with: wrangler secret put CF_TOKEN

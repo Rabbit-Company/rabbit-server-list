@@ -274,4 +274,28 @@ export default class Discord{
 		return Errors.getJson(0);
 	}
 
+	static async updateCrawledData(data){
+
+		if(typeof(data.servers) !== 'object') return Errors.getJson(1000);
+
+		data = data.servers;
+		let updated = 0;
+		for(let i = 0; i < data.length; i++){
+			try{
+
+				await Utils.env.DB.prepare("UPDATE discord SET icon = ?, banner = ?, splash = ?, name = ?, members = ?, members_total = ?, updated = ? WHERE id = ?")
+				.bind(data[i].icon, data[i].banner, data[i].splash, data[i].name, data[i].members, data[i].members_total, data[i].updated, data[i].id).run();
+
+				Utils.env.DAE.writeDataPoint({
+					'doubles': [data[i].members, data[i].members_total],
+					'indexes': [data[i].id]
+				});
+
+				updated++;
+			}catch{}
+		}
+
+		return { 'error': 0, 'info': 'Success', 'data': { 'total': data.length, 'updated': updated } };
+	}
+
 }

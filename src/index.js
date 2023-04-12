@@ -248,6 +248,26 @@ router.post('/v1/account/servers/discord', async request => {
 	return Utils.jsonResponse(message);
 });
 
+router.post('/v1/servers/discord/crawler', async request => {
+	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
+
+	const auth = Utils.basicAuthentication(request.req.headers.get('Authorization'));
+	if(auth === null) return Utils.jsonResponse(Errors.getJson(1006));
+
+	if(auth.user !== 'crawler') return Utils.jsonResponse(Errors.getJson(9999));
+	if(auth.pass !== request.env.CRAWLER_SECRET_TOKEN) return Utils.jsonResponse(Errors.getJson(9999));
+
+	let data = {};
+	try{
+		data = await request.req.json();
+	}catch{
+		return Utils.jsonResponse(Errors.getJson(1000));
+	}
+
+	let message = await Discord.updateCrawledData(data);
+	return Utils.jsonResponse(message);
+});
+
 router.get('/v1/servers/discord/page/:page', async request => {
 	await Utils.initialize(request.env, request.req.headers.get('CF-Connecting-IP'));
 
