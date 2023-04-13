@@ -219,7 +219,7 @@ export default class Discord{
 		let secretToken = await Utils.generateSecret();
 		let keywords = "";
 		for(let i = 0; i < data['keywords'].length; i++){
-			keywords += data['keywords'][i] + ',';
+			if(data['keywords'][i].length >= 2) keywords += data['keywords'][i] + ',';
 		}
 		keywords = keywords.substring(0, keywords.length-1);
 
@@ -284,7 +284,7 @@ export default class Discord{
 
 		let keywords = "";
 		for(let i = 0; i < data['keywords'].length; i++){
-			keywords += data['keywords'][i] + ',';
+			if(data['keywords'][i].length >= 2) keywords += data['keywords'][i] + ',';
 		}
 		keywords = keywords.substring(0, keywords.length-1);
 
