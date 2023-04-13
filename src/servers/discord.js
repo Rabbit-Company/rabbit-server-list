@@ -133,6 +133,8 @@ export default class Discord{
 		if(!Validate.isPositiveInteger(id)) return Errors.getJson(1022);
 		if(!Validate.captcha(turnstile)) return Errors.getJson(1034);
 
+		if(!Validate.bearer(token)) return Errors.getJson(1040);
+
 		let formData = new FormData();
 		formData.append('secret', Utils.env.CF_TURNSTILE_TOKEN);
 		formData.append('response', turnstile);
@@ -206,6 +208,7 @@ export default class Discord{
 		if(!Validate.username(username)) return Errors.getJson(1001);
 		if(!Validate.token(token)) return Errors.getJson(1004);
 
+		if(!Validate.bearer(data['token'])) return Errors.getJson(1040);
 		if(!Validate.discordInviteCode(data['invite_code'])) return Errors.getJson(1036);
 		if(!Validate.discordServerCategory(data['category'])) return Errors.getJson(1039);
 		if(!Validate.description(data['description'])) return Errors.getJson(1018);
@@ -235,6 +238,18 @@ export default class Discord{
 		let splash = resData.guild?.splash;
 
 		if(!Validate.snowflake(guild_id)) return Errors.getJson(1009);
+
+		res = await fetch('https://discord.com/api/v10/users/@me/guilds', { headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${data['token']}` }, method: 'GET' });
+		if(!res.ok) return Errors.getJson(1009);
+		if(res.status !== 200) return Errors.getJson(1040);
+
+		let servers = await res.json();
+		let authorized = false;
+		for(let i = 0; i < servers.length; i++){
+			if(servers[i].id !== guild_id) continue;
+			if((servers[i].permissions & 0x8) === 0x8) authorized = true;
+		}
+		if(!authorized) return Errors.getJson(1041);
 
 		let members = resData['approximate_presence_count'];
 		let members_total = resData['approximate_member_count'];

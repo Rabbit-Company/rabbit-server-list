@@ -172,4 +172,9 @@ export default class Validate{
 		return /^([a-z0-9]{3,29})$/.test(query);
 	}
 
+	static bearer(bearer){
+		if(typeof(bearer) !== 'string') return false;
+		return /^([a-zA-Z0-9]{10,128})$/.test(bearer);
+	}
+
 }
