@@ -240,7 +240,7 @@ export default class Discord{
 		if(!Validate.snowflake(guild_id)) return Errors.getJson(1009);
 
 		res = await fetch('https://discord.com/api/v10/users/@me/guilds', { headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${data['token']}` }, method: 'GET' });
-		if(!res.ok) return Errors.getJson(1009);
+		if(!res.ok) return Errors.getJson(1040);
 		if(res.status !== 200) return Errors.getJson(1040);
 
 		let servers = await res.json();
