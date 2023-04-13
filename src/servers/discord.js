@@ -273,6 +273,7 @@ export default class Discord{
 
 		if(!Validate.isPositiveInteger(id)) return Errors.getJson(1022);
 
+		if(!Validate.bearer(data['token'])) return Errors.getJson(1040);
 		if(!Validate.discordInviteCode(data['invite_code'])) return Errors.getJson(1036);
 		if(!Validate.discordServerCategory(data['category'])) return Errors.getJson(1039);
 		if(!Validate.description(data['description'])) return Errors.getJson(1018);
@@ -286,6 +287,30 @@ export default class Discord{
 			keywords += data['keywords'][i] + ',';
 		}
 		keywords = keywords.substring(0, keywords.length-1);
+
+		let res = await fetch('https://discord.com/api/v10/invites/' + data['invite_code'] + '?with_counts=true&with_expiration=true');
+		if(!res.ok) return Errors.getJson(1009);
+		if(res.status === 404) return Errors.getJson(1036);
+		if(res.status !== 200) return Errors.getJson(1009);
+
+		let resData = await res.json();
+		if(resData['expires_at'] !== null) return Errors.getJson(1037);
+
+		let guild_id = resData.guild?.id;
+
+		if(!Validate.snowflake(guild_id)) return Errors.getJson(1009);
+
+		res = await fetch('https://discord.com/api/v10/users/@me/guilds', { headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${data['token']}` }, method: 'GET' });
+		if(!res.ok) return Errors.getJson(1040);
+		if(res.status !== 200) return Errors.getJson(1040);
+
+		let servers = await res.json();
+		let authorized = false;
+		for(let i = 0; i < servers.length; i++){
+			if(servers[i].id !== guild_id) continue;
+			if((servers[i].permissions & 0x8) === 0x8) authorized = true;
+		}
+		if(!authorized) return Errors.getJson(1041);
 
 		try{
 			await Utils.env.DB.prepare("UPDATE discord SET invite_code = ?, category = ?, description = ?, keywords = ? WHERE id = ?")

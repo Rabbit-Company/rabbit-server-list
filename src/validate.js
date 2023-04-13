@@ -154,7 +154,7 @@ export default class Validate{
 
 	static discordInviteCode(code){
 		if(typeof(code) !== 'string') return false;
-		return /^([a-zA-Z0-9]{3,29})$/.test(code);
+		return /^([a-zA-Z0-9\-]{3,29})$/.test(code);
 	}
 
 	static discordServerCategory(category){
