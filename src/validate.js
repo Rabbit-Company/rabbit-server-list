@@ -177,4 +177,9 @@ export default class Validate{
 		return /^([a-zA-Z0-9]{10,128})$/.test(bearer);
 	}
 
+	static keyword(keyword){
+		if(typeof(keyword) !== 'string') return false;
+		return /^([a-zA-Z0-9\-]{2,30})$/.test(keyword);
+	}
+
 }

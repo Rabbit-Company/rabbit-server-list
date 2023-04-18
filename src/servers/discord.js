@@ -219,9 +219,10 @@ export default class Discord{
 		let secretToken = await Utils.generateSecret();
 		let keywords = "";
 		for(let i = 0; i < data['keywords'].length; i++){
-			if(data['keywords'][i].length >= 2) keywords += data['keywords'][i] + ',';
+			if(Validate.keyword(data['keywords'][i])) keywords += data['keywords'][i] + ',';
 		}
 		keywords = keywords.substring(0, keywords.length-1);
+		if(keywords.length > 2) return Errors.getJson(1038);
 
 		let res = await fetch('https://discord.com/api/v10/invites/' + data['invite_code'] + '?with_counts=true&with_expiration=true');
 		if(!res.ok) return Errors.getJson(1009);
@@ -284,9 +285,10 @@ export default class Discord{
 
 		let keywords = "";
 		for(let i = 0; i < data['keywords'].length; i++){
-			if(data['keywords'][i].length >= 2) keywords += data['keywords'][i] + ',';
+			if(Validate.keyword(data['keywords'][i])) keywords += data['keywords'][i] + ',';
 		}
 		keywords = keywords.substring(0, keywords.length-1);
+		if(keywords.length > 2) return Errors.getJson(1038);
 
 		let res = await fetch('https://discord.com/api/v10/invites/' + data['invite_code'] + '?with_counts=true&with_expiration=true');
 		if(!res.ok) return Errors.getJson(1009);
