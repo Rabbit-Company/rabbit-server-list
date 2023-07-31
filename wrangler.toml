@@ -37,7 +37,7 @@ migrations = [
 	{ tag = "v2", new_classes = ["DiscordVoteDO"] }
 ]
 
-triggers = { crons = ["0 0 1 * *"] }
+triggers = { crons = ["0 0 1 * *", "0 0 * * *"] }
 
 vars = { ACCOUNT_ID = "eb996327383b1ba7869926dcb856b4ae" }
 

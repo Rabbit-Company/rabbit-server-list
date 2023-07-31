@@ -345,8 +345,17 @@ router.all("*", () => {
 export default {
 	fetch: router.fetch,
 	async scheduled(event, env, ctx) {
-		await Minecraft.resetVotes(env);
-		await Discord.resetVotes(env);
+		switch (event.cron) {
+			case "0 0 1 * *":
+        // Every first day of the month
+				await Minecraft.resetVotes(env);
+				await Discord.resetVotes(env);
+      break;
+			case "0 0 * * *":
+				// Every day
+				await Discord.removeInvalidServers(env);
+			break;
+		}
 	},
 	async queue(batch, env){
 		let votes = [];

@@ -344,6 +344,12 @@ export default class Discord{
 		return Errors.getJson(0);
 	}
 
+	static async removeInvalidServers(env){
+		try{
+			await env.DB.prepare("DELETE FROM discord WHERE updated <= date('now', '-7 days')").run();
+		}catch{}
+	}
+
 	static async updateCrawledData(data){
 
 		if(typeof(data.servers) !== 'object') return Errors.getJson(1000);
