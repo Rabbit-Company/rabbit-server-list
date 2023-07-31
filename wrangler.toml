@@ -7,7 +7,7 @@ kv_namespaces = [
 ]
 
 d1_databases = [
-	{ binding = "DB", database_name = "rabbit-server-list", database_id = "1167ecc9-c3e5-41c8-ae72-5e10c653cc40" }
+	{ binding = "DB", database_name = "rabbit-server-list2", database_id = "352456ca-90b9-44d6-a0e2-2f0b5c0626a3" }
 ]
 
 r2_buckets = [
